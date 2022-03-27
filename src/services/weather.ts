@@ -1,5 +1,5 @@
 
-const NEW_YORK = 'https://api.open-meteo.com/v1/forecast?latitude=40.71&longitude=-74.01&hourly=temperature_2m&temperature_unit=fahrenheit&windspeed_unit=mph&precipitation_unit=inch&timezone=America%2FNew_York&current_weather=true'
+const API = 'https://api.open-meteo.com/v1/forecast?'
 
 interface ForecastResponse {
   error: number | null;
@@ -11,7 +11,7 @@ interface Forecast {
   longitude: number;
   elevation: number;
   utcOffsetSeconds: number;
-  unit: '°C' | '°F';
+  temperatureUnit: '°C' | '°F';
   hourly: {
     time: Date;
     temperature: number;
@@ -47,10 +47,22 @@ interface RawResponse {
   }
 }
 
+interface ForecastProps {
+  latitude?: number;
+  longitude?: number;
+  hourly?: string[]; // can be more specific
+  temperatureUnit?: 'C' | 'F';
+  windSpeedUnit?: 'kmh' | 'ms' | 'mph' | 'kn';
+  precipitationUnit?: 'mm' | 'inch';
+  timezone?: string;
+  currentWeather?: boolean;
+}
+
 /**
  * Fetches a forecast for a given latitude and longitude.
  */
-export async function getForecast(url = NEW_YORK): Promise<ForecastResponse> {
+export async function getForecast(props: ForecastProps = {}): Promise<ForecastResponse> {
+  const url = buildUrl(props);
   try {
     const response = await fetch(url);
     if (response.status === 200) {
@@ -70,6 +82,29 @@ export async function getForecast(url = NEW_YORK): Promise<ForecastResponse> {
   }
 }
 
+function buildUrl({
+  latitude = 40.6501,
+  longitude = -73.94958,
+  hourly = ['temperature_2m'],
+  temperatureUnit = 'C',
+  windSpeedUnit = 'kmh',
+  precipitationUnit = 'mm',
+  timezone = 'America%2FNew_York',
+  currentWeather = true,
+}: ForecastProps = {}) {
+  return [
+    API,
+    `latitude=${latitude}`,
+    `&longitude=${longitude}`,
+    `&hourly=${hourly}`,
+    `&temperature_unit=${temperatureUnit === 'F' ? 'fahrenheit' : 'celsius'}`,
+    `&windspeed_unit=${windSpeedUnit}`,
+    `&precipitation_unit=${precipitationUnit}`,
+    `&timezone=${timezone}`,
+    `&current_weather=${currentWeather}`,
+  ].join('');
+}
+
 // Converts raw API response to Forecast
 function convertJsonToData(json: RawResponse): Forecast {
   return {
@@ -77,7 +112,7 @@ function convertJsonToData(json: RawResponse): Forecast {
     longitude: json.longitude,
     elevation: json.elevation,
     utcOffsetSeconds: json.utc_offset_seconds,
-    unit: json.hourly_units.temperature_2m === '°F' ? '°F' : '°C',
+    temperatureUnit: json.hourly_units.temperature_2m === '°F' ? '°F' : '°C',
     hourly: json.hourly.time.map((time, index) => ({
       time: new Date(time),
       temperature: +json.hourly.temperature_2m[index],

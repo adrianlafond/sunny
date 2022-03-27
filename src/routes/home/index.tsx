@@ -7,14 +7,14 @@ const Home: FunctionalComponent = () => {
     const [temperature, setTemperature] = useState('-');
 
     useEffect(() => {
-        getForecast().then(forecast => {
+        getForecast({ temperatureUnit: 'F' }).then(forecast => {
             console.log(forecast);
             const { data, error } = forecast;
             if (error) {
                 setTemperature('-');
 
             } else if (data) {
-                setTemperature(`${data.currentWeather.temperature} ${data.unit}`);
+                setTemperature(`${data.currentWeather.temperature} ${data.temperatureUnit}`);
             }
         });
     }, []);
