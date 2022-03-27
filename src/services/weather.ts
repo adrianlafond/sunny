@@ -22,7 +22,13 @@ interface Forecast {
     windSpeed: number;
     windDirection: number;
     weatherCode: number;
-  }
+  },
+  daily: {
+    dawn: Date;
+    dusk: Date;
+    date: Date;
+    weatherCode: number;
+  }[];
 }
 
 // Raw response from Open Meteo API
@@ -44,7 +50,13 @@ interface RawResponse {
     windspeed: number;
     winddirection: number;
     weathercode: number;
-  }
+  };
+  daily: {
+    sunrise: string[];
+    sunset: string[];
+    time: string[];
+    weathercode: number[];
+  };
 }
 
 interface ForecastProps {
@@ -102,11 +114,13 @@ function buildUrl({
     `&precipitation_unit=${precipitationUnit}`,
     `&timezone=${timezone}`,
     `&current_weather=${currentWeather}`,
+    `&daily=sunrise,sunset,weathercode`,
   ].join('');
 }
 
 // Converts raw API response to Forecast
 function convertJsonToData(json: RawResponse): Forecast {
+  console.log(json);
   return {
     latitude: json.latitude,
     longitude: json.longitude,
@@ -123,6 +137,12 @@ function convertJsonToData(json: RawResponse): Forecast {
       windSpeed: json.current_weather.windspeed,
       windDirection: json.current_weather.winddirection,
       weatherCode: json.current_weather.weathercode,
-    }
+    },
+    daily: json.daily.time.map((time, index) => ({
+      dawn: new Date(json.daily.sunrise[index]),
+      dusk: new Date(json.daily.sunset[index]),
+      date: new Date(`${time}T12:00`),
+      weatherCode: json.daily.weathercode[index],
+    })),
   }
 }
