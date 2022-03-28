@@ -3,7 +3,6 @@ import { useState } from 'preact/hooks';
 import { AddLocation } from '../add-location';
 import { Preferences } from '../preferences';
 import { WeatherLocation } from '../weather-location';
-import { ForecastContext } from '../../contexts';
 import style from './style.scss';
 import { Forecast } from '../../services/forecast';
 
