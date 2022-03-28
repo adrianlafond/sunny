@@ -6,12 +6,12 @@ import style from './style.scss';
 import { FORECAST_CACHE_TIME } from '../../constants';
 import { Forecast, getForecast } from '../../services/forecast';
 
-interface WeatherLocationProps {
+interface ForecastLocationProps {
   forecast: Forecast;
   onForecastUpdate: (forecast: Forecast) => void;
 }
 
-export const WeatherLocation: FunctionalComponent<WeatherLocationProps> = ({
+export const ForecastLocation: FunctionalComponent<ForecastLocationProps> = ({
   forecast,
   onForecastUpdate,
 }) => {
@@ -35,7 +35,7 @@ export const WeatherLocation: FunctionalComponent<WeatherLocationProps> = ({
 
   return (
     <div class={classnames(page.page, style.location)}>
-      <h2>Weather Location</h2>
+      <h2>Forecast Location</h2>
 
       <p>{temp} {forecast.temperatureUnit}</p>
       <p>Dawn: {forecast.daily[0]?.dawn.toLocaleTimeString()}</p>
