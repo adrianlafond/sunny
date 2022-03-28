@@ -4,17 +4,27 @@ import { getForecast } from '../../services/weather';
 import style from './style.css';
 
 const Home: FunctionalComponent = () => {
-    const [temperature, setTemperature] = useState('-');
+    const [forecast, setForecast] = useState({
+        temperature: '-',
+        dawn: '-',
+        dusk: '-',
+    });
 
     useEffect(() => {
-        getForecast().then(forecast => {
-            console.log(forecast);
+        getForecast({ temperatureUnit: 'F' }).then(forecast => {
             const { data, error } = forecast;
             if (error) {
-                setTemperature('-');
-
+                setForecast({
+                    temperature: '-',
+                    dawn: '-',
+                    dusk: '-',
+                });
             } else if (data) {
-                setTemperature(`${data.currentWeather.temperature} ${data.unit}`);
+                setForecast({
+                    temperature: `${data.currentWeather.temperature} ${data.temperatureUnit}`,
+                    dawn: data.daily[0].dawn.toLocaleTimeString(),
+                    dusk: data.daily[0].dusk.toLocaleTimeString(),
+                });
             }
         });
     }, []);
@@ -22,8 +32,9 @@ const Home: FunctionalComponent = () => {
     return (
         <div class={style.home}>
             <h1>Home</h1>
-            <p>{temperature}</p>
-            <p>This is the Home component.</p>
+            <p>{forecast.temperature}</p>
+            <p>Dawn: {forecast.dawn}</p>
+            <p>Dusk: {forecast.dusk}</p>
         </div>
     );
 };
