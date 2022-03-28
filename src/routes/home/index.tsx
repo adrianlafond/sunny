@@ -1,6 +1,6 @@
 import { FunctionalComponent, h } from 'preact';
 import { useEffect, useState } from 'preact/hooks';
-import { getForecast } from '../../services/weather';
+import { getForecast } from '../../services/forecast';
 import style from './style.css';
 
 const Home: FunctionalComponent = () => {

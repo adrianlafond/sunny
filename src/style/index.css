@@ -14,7 +14,3 @@ html, body {
 * {
 	box-sizing: border-box;
 }
-
-#preact_root {
-	height: 100%;
-}

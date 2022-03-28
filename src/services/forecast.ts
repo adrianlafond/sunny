@@ -1,13 +1,14 @@
 import { WeatherCode } from './weather-code';
+import { DEFAULT_LATITUDE, DEFAULT_LONGITUDE } from '../constants';
 
 const API = 'https://api.open-meteo.com/v1/forecast?'
 
-interface ForecastResponse {
+export interface ForecastResponse {
   error: number | null;
   data?: Forecast;
 }
 
-interface Forecast {
+export interface Forecast {
   latitude: number;
   longitude: number;
   elevation: number;
@@ -30,6 +31,7 @@ interface Forecast {
     date: Date;
     weatherCode: WeatherCode;
   }[];
+  timestamp: Date;
 }
 
 // Raw response from Open Meteo API
@@ -75,14 +77,24 @@ interface ForecastProps {
  * Fetches a forecast for a given latitude and longitude.
  */
 export async function getForecast(props: ForecastProps = {}): Promise<ForecastResponse> {
-  const url = buildUrl(props);
+  const latitude = props.latitude ?? DEFAULT_LATITUDE;
+  const longitude = props.longitude ?? DEFAULT_LONGITUDE;
+  const url = buildUrl({
+    latitude,
+    longitude,
+    ...props,
+  });
   try {
     const response = await fetch(url);
     if (response.status === 200) {
       const json = await response.json();
       return {
         error: null,
-        data: convertJsonToData(json),
+        data: convertJsonToData({
+          ...json,
+          latitude,
+          longitude,
+        }),
       }
     }
     return {
@@ -96,8 +108,8 @@ export async function getForecast(props: ForecastProps = {}): Promise<ForecastRe
 }
 
 function buildUrl({
-  latitude = 40.6501,
-  longitude = -73.94958,
+  latitude = DEFAULT_LATITUDE,
+  longitude = DEFAULT_LONGITUDE,
   hourly = ['temperature_2m'],
   temperatureUnit = 'C',
   windSpeedUnit = 'kmh',
@@ -121,7 +133,6 @@ function buildUrl({
 
 // Converts raw API response to Forecast
 function convertJsonToData(json: RawResponse): Forecast {
-  console.log(json);
   return {
     latitude: json.latitude,
     longitude: json.longitude,
@@ -145,5 +156,6 @@ function convertJsonToData(json: RawResponse): Forecast {
       date: new Date(`${time}T12:00`),
       weatherCode: json.daily.weathercode[index],
     })),
+    timestamp: new Date(),
   }
 }
