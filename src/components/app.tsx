@@ -5,6 +5,7 @@ import Home from '../routes/home';
 import Profile from '../routes/profile';
 import NotFoundPage from '../routes/notfound';
 import Header from './header';
+import { SpatialNavigation } from './spatial-navigation';
 
 const App: FunctionalComponent = () => {
     // TODO: drive spatial navigation instead of pages via URL
@@ -15,6 +16,7 @@ const App: FunctionalComponent = () => {
     return (
         <div id="preact_root">
             <Header />
+            <SpatialNavigation />
             <Router onChange={handleRouterChange}>
                 <Route path="/" component={Home} />
                 <Route path="/profile/" component={Profile} user="me" />
