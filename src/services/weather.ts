@@ -1,3 +1,4 @@
+import { WeatherCode } from './weather-code';
 
 const API = 'https://api.open-meteo.com/v1/forecast?'
 
@@ -21,13 +22,13 @@ interface Forecast {
     temperature: number;
     windSpeed: number;
     windDirection: number;
-    weatherCode: number;
+    weatherCode: WeatherCode;
   },
   daily: {
     dawn: Date;
     dusk: Date;
     date: Date;
-    weatherCode: number;
+    weatherCode: WeatherCode;
   }[];
 }
 
@@ -49,13 +50,13 @@ interface RawResponse {
     temperature: number;
     windspeed: number;
     winddirection: number;
-    weathercode: number;
+    weathercode: WeatherCode;
   };
   daily: {
     sunrise: string[];
     sunset: string[];
     time: string[];
-    weathercode: number[];
+    weathercode: WeatherCode[];
   };
 }
 

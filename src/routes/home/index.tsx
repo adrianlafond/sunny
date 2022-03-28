@@ -12,7 +12,6 @@ const Home: FunctionalComponent = () => {
 
     useEffect(() => {
         getForecast({ temperatureUnit: 'F' }).then(forecast => {
-            console.log(forecast);
             const { data, error } = forecast;
             if (error) {
                 setForecast({
