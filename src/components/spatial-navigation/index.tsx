@@ -7,6 +7,7 @@ import style from './style.scss';
 import { Forecast } from '../../services/forecast';
 
 export const SpatialNavigation: FunctionalComponent = () => {
+  // TODO: move all forecasts code to a Forecasts component
   const [forecasts, setForecasts] = useState<Forecast[]>([{
     latitude: 40.6501,
     longitude: -73.94958,
