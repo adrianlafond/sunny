@@ -1,15 +1,21 @@
 import { FunctionalComponent, h } from 'preact';
+import { useContext } from 'preact/hooks';
 import { Preferences } from '../preferences';
 import { Forecasts } from '../forecasts';
 import style from './style.scss';
+import { ThemeContext } from '../../contexts';
 
 export const SpatialNavigation: FunctionalComponent = () => {
+  const theme = useContext(ThemeContext);
+
   return (
-    <div class={style.spatialnav}>
-      <div class={style.spatialnav__zoom}>
-        <Forecasts />
-        <Preferences />
+    <ThemeContext.Provider value={theme}>
+      <div class={style.spatialnav}>
+        <div class={style.spatialnav__zoom}>
+          <Forecasts />
+          <Preferences />
+        </div>
       </div>
-    </div>
+    </ThemeContext.Provider>
   );
 };

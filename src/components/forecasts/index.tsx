@@ -27,14 +27,16 @@ export const Forecasts: FunctionalComponent = () => {
 
   return (
     <div class={style.forecasts}>
-      {forecasts.map(forecast => (
-        <ForecastLocation
-          key={`${forecast.latitude},${forecast.longitude}`}
-          forecast={forecast}
-          onForecastUpdate={addForecast}
-        />
-      ))}
-      <AddLocation />
+      <div class={style.forecasts__carousel}>
+        {forecasts.map(forecast => (
+          <ForecastLocation
+            key={`${forecast.latitude},${forecast.longitude}`}
+            forecast={forecast}
+            onForecastUpdate={addForecast}
+          />
+        ))}
+        <AddLocation />
+      </div>
     </div>
   );
 };

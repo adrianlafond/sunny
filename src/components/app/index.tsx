@@ -1,6 +1,6 @@
 import { FunctionalComponent, h } from 'preact';
 import { Router, RouterOnChangeArgs } from 'preact-router';
-import { useContext } from 'preact/hooks';
+import { useContext, useEffect } from 'preact/hooks';
 import { SpatialNavigation } from '../spatial-navigation';
 import { NavigationContext } from '../../contexts';
 import style from './style.scss';
