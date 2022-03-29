@@ -3,10 +3,11 @@ import { useState } from 'preact/hooks';
 import { AddLocation } from '../add-location';
 import { ForecastLocation } from '../forecast-location';
 import { Forecast } from '../../services/forecast';
+import { restoreForecasts, storeForecasts } from '../../services/storage';
 import style from './style.scss';
 
 export const Forecasts: FunctionalComponent = () => {
-  const [forecasts, setForecasts] = useState<Forecast[]>([{
+  const [forecasts, setForecasts] = useState<Forecast[]>(restoreForecasts() || [{
     latitude: 40.6501,
     longitude: -73.94958,
     elevation: 0,
@@ -14,14 +15,14 @@ export const Forecasts: FunctionalComponent = () => {
     temperatureUnit: '°C',
     hourly: [],
     currentWeather: {
-      time: new Date(),
+      time: new Date().valueOf(),
       temperature: 0 / 0,
       windSpeed: 0,
       windDirection: 0,
       weatherCode: 0,
     },
     daily: [],
-    timestamp: new Date(0),
+    timestamp: new Date(0).valueOf(),
   }]);
 
   function addForecast(forecast: Forecast) {
@@ -34,6 +35,8 @@ export const Forecasts: FunctionalComponent = () => {
     } else {
       newForecasts[index] = forecast;
     }
+    console.log(newForecasts);
+    storeForecasts(newForecasts);
     setForecasts(newForecasts);
   }
 

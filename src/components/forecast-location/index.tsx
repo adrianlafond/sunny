@@ -1,5 +1,5 @@
 import { FunctionalComponent, h } from 'preact';
-import { useEffect } from 'preact/hooks';
+import { useEffect, useMemo } from 'preact/hooks';
 import classnames from 'classnames';
 import page from '../shared/page.scss';
 import style from './style.scss';
@@ -17,6 +17,7 @@ export const ForecastLocation: FunctionalComponent<ForecastLocationProps> = ({
 }) => {
   useEffect(() => {
     if (Date.now() - forecast.timestamp.valueOf() >= FORECAST_CACHE_TIME) {
+      // Forecast is stale. Fetch new data.
       const { latitude, longitude } = forecast;
       getForecast({
         latitude,
@@ -31,15 +32,22 @@ export const ForecastLocation: FunctionalComponent<ForecastLocationProps> = ({
     }
   }, [forecast.timestamp]);
 
-  const temp = isNaN(forecast.currentWeather.temperature) ? '-' : forecast.currentWeather.temperature;
+  const { temp, dawn, dusk, timestamp } = useMemo(() => ({
+    temp: isNaN(forecast.currentWeather.temperature) ? '-' : forecast.currentWeather.temperature,
+    dawn: forecast.daily[0]?.dawn ? new Date(forecast.daily[0].dawn).toLocaleTimeString() : '-',
+    dusk: forecast.daily[0]?.dusk ? new Date(forecast.daily[0].dusk).toLocaleTimeString() : '-',
+    timestamp: forecast.timestamp ? new Date(forecast.timestamp).toLocaleString() : '-',
+  }), [forecast.timestamp]);
 
   return (
     <div class={classnames(page.page, style.location)}>
       <h2>Forecast Location</h2>
 
       <p>{temp} {forecast.temperatureUnit}</p>
-      <p>Dawn: {forecast.daily[0]?.dawn.toLocaleTimeString()}</p>
-      <p>Dusk: {forecast.daily[0]?.dusk.toLocaleTimeString()}</p>
+      <p>Dawn: {dawn}</p>
+      <p>Dusk: {dusk}</p>
+
+      <p>timestamp: {timestamp}</p>
     </div>
   );
 };

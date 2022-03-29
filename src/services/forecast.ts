@@ -15,23 +15,23 @@ export interface Forecast {
   utcOffsetSeconds: number;
   temperatureUnit: '°C' | '°F';
   hourly: {
-    time: Date;
+    time: number;
     temperature: number;
   }[];
   currentWeather: {
-    time: Date;
+    time: number;
     temperature: number;
     windSpeed: number;
     windDirection: number;
     weatherCode: WeatherCode;
   },
   daily: {
-    dawn: Date;
-    dusk: Date;
-    date: Date;
+    dawn: number;
+    dusk: number;
+    date: number;
     weatherCode: WeatherCode;
   }[];
-  timestamp: Date;
+  timestamp: number;
 }
 
 // Raw response from Open Meteo API
@@ -140,22 +140,22 @@ function convertJsonToData(json: RawResponse): Forecast {
     utcOffsetSeconds: json.utc_offset_seconds,
     temperatureUnit: json.hourly_units.temperature_2m === '°F' ? '°F' : '°C',
     hourly: json.hourly.time.map((time, index) => ({
-      time: new Date(time),
+      time: new Date(time).valueOf(),
       temperature: +json.hourly.temperature_2m[index],
     })),
     currentWeather: {
-      time: new Date(json.current_weather.time),
+      time: new Date(json.current_weather.time).valueOf(),
       temperature: json.current_weather.temperature,
       windSpeed: json.current_weather.windspeed,
       windDirection: json.current_weather.winddirection,
       weatherCode: json.current_weather.weathercode,
     },
     daily: json.daily.time.map((time, index) => ({
-      dawn: new Date(json.daily.sunrise[index]),
-      dusk: new Date(json.daily.sunset[index]),
-      date: new Date(`${time}T12:00`),
+      dawn: new Date(json.daily.sunrise[index]).valueOf(),
+      dusk: new Date(json.daily.sunset[index]).valueOf(),
+      date: new Date(`${time}T12:00`).valueOf(),
       weatherCode: json.daily.weathercode[index],
     })),
-    timestamp: new Date(),
+    timestamp: new Date().valueOf(),
   }
 }
