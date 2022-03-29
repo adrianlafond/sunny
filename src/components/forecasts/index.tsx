@@ -4,26 +4,11 @@ import { AddLocation } from '../add-location';
 import { ForecastLocation } from '../forecast-location';
 import { Forecast } from '../../services/forecast';
 import { restoreForecasts, storeForecasts } from '../../services/storage';
+import { getDefaultForecast } from '../../services/default-forecast';
 import style from './style.scss';
 
 export const Forecasts: FunctionalComponent = () => {
-  const [forecasts, setForecasts] = useState<Forecast[]>(restoreForecasts() || [{
-    latitude: 40.6501,
-    longitude: -73.94958,
-    elevation: 0,
-    utcOffsetSeconds: 0,
-    temperatureUnit: '°C',
-    hourly: [],
-    currentWeather: {
-      time: new Date().valueOf(),
-      temperature: 0 / 0,
-      windSpeed: 0,
-      windDirection: 0,
-      weatherCode: 0,
-    },
-    daily: [],
-    timestamp: new Date(0).valueOf(),
-  }]);
+  const [forecasts, setForecasts] = useState<Forecast[]>(restoreForecasts() || [getDefaultForecast()]);
 
   function addForecast(forecast: Forecast) {
     const index = forecasts.findIndex(f => (

@@ -9,6 +9,7 @@ export interface ForecastResponse {
 }
 
 export interface Forecast {
+  name: string;
   latitude: number;
   longitude: number;
   elevation: number;
@@ -63,6 +64,7 @@ interface RawResponse {
 }
 
 interface ForecastProps {
+  name: string;
   latitude?: number;
   longitude?: number;
   hourly?: string[]; // can be more specific
@@ -76,13 +78,13 @@ interface ForecastProps {
 /**
  * Fetches a forecast for a given latitude and longitude.
  */
-export async function getForecast(props: ForecastProps = {}): Promise<ForecastResponse> {
+export async function getForecast(props: ForecastProps = { name: 'Somewhere' }): Promise<ForecastResponse> {
   const latitude = props.latitude ?? DEFAULT_LATITUDE;
   const longitude = props.longitude ?? DEFAULT_LONGITUDE;
   const url = buildUrl({
+    ...props,
     latitude,
     longitude,
-    ...props,
   });
   try {
     const response = await fetch(url);
@@ -92,6 +94,7 @@ export async function getForecast(props: ForecastProps = {}): Promise<ForecastRe
         error: null,
         data: convertJsonToData({
           ...json,
+          name: props.name,
           latitude,
           longitude,
         }),
@@ -116,7 +119,7 @@ function buildUrl({
   precipitationUnit = 'mm',
   timezone = 'America%2FNew_York',
   currentWeather = true,
-}: ForecastProps = {}) {
+}: Omit<ForecastProps, 'name'> = {}) {
   return [
     API,
     `latitude=${latitude}`,
@@ -132,8 +135,9 @@ function buildUrl({
 }
 
 // Converts raw API response to Forecast
-function convertJsonToData(json: RawResponse): Forecast {
+function convertJsonToData(json: RawResponse & { name: string }): Forecast {
   return {
+    name: json.name,
     latitude: json.latitude,
     longitude: json.longitude,
     elevation: json.elevation,

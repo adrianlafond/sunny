@@ -18,8 +18,9 @@ export const ForecastLocation: FunctionalComponent<ForecastLocationProps> = ({
   useEffect(() => {
     if (Date.now() - forecast.timestamp.valueOf() >= FORECAST_CACHE_TIME) {
       // Forecast is stale. Fetch new data.
-      const { latitude, longitude } = forecast;
+      const { name, latitude, longitude } = forecast;
       getForecast({
+        name,
         latitude,
         longitude,
       }).then(response => {
@@ -41,7 +42,7 @@ export const ForecastLocation: FunctionalComponent<ForecastLocationProps> = ({
 
   return (
     <div class={classnames(page.page, style.location)}>
-      <h2>Forecast Location</h2>
+      <h2>{forecast.name}</h2>
 
       <p>{temp} {forecast.temperatureUnit}</p>
       <p>Dawn: {dawn}</p>
