@@ -1,5 +1,5 @@
 import { FunctionalComponent, h } from 'preact';
-import { useContext } from 'preact/hooks';
+import { useContext, useRef } from 'preact/hooks';;
 import { Preferences } from '../preferences';
 import { Forecasts } from '../forecasts';
 import style from './style.scss';
