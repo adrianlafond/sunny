@@ -10,8 +10,10 @@ const App: FunctionalComponent = () => {
 
   // TODO: drive spatial navigation instead of pages via URL
   function handleRouterChange(event: RouterOnChangeArgs) {
-    console.log(event.url);
     navigation.path = event.url;
+    if (navigation.path === '/' || navigation.path.startsWith('/forecast')) {
+      navigation.mostRecentForecast = navigation.path;
+    }
   }
 
   return (

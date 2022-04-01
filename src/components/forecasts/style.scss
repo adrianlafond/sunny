@@ -12,8 +12,6 @@
 
   &__btn {
     position: absolute;
-    top: 50%;
-    right: 0;
     width: 48px;
     padding: 8px;
 
@@ -24,6 +22,10 @@
     &--right {
       top: 50%;
       right: 0;
+    }
+    &--prefs {
+      left: 50%;
+      bottom: 0;
     }
   }
 }

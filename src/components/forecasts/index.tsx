@@ -1,5 +1,5 @@
 import { FunctionalComponent, h } from 'preact';
-import { useContext, useEffect, useRef, useState } from 'preact/hooks';
+import { useContext, useEffect, useMemo, useRef, useState } from 'preact/hooks';
 import { route } from 'preact-router';
 import classnames from 'classnames';
 import { IconLeft, IconRight } from '../icons';
@@ -10,6 +10,7 @@ import { restoreForecasts, storeForecasts } from '../../services/storage';
 import { getDefaultForecast } from '../../services/default-forecast';
 import { NavigationContext } from '../../contexts';
 import style from './style.scss';
+import { decodeForecastPath, encodeForecastPath } from '../../services/paths';
 
 export const Forecasts: FunctionalComponent = () => {
   const [forecasts, setForecasts] = useState<Forecast[]>(restoreForecasts() || [getDefaultForecast()]);
@@ -18,27 +19,49 @@ export const Forecasts: FunctionalComponent = () => {
 
   const navigation = useContext(NavigationContext);
 
+  function isAddPage() {
+    return navigation.path.startsWith('/forecast/add');
+  }
+
+  function isForecastPage() {
+    return navigation.path.startsWith('/forecast');
+  }
+
+  function getForecastIndex() {
+    if (navigation.path === '/') {
+      return 0;
+    }
+    if (isAddPage()) {
+      return forecasts.length - 1;
+    }
+    if (navigation.path.startsWith('/forecast')) {
+      const coords = decodeForecastPath(navigation.path);
+      if (coords) {
+        const { latitude, longitude } = coords;
+        return forecasts.findIndex(f => f.latitude === latitude && f.longitude === longitude);
+      }
+    }
+    return -1;
+  };
+
+  // On navigation path change, slides the relevant forecast into view.
   useEffect(() => {
-    // On navigation path change, slide the relevant forecast into view.
     if (!carousel.current) {
       return;
     }
-    const el = carousel.current;
-    const match = navigation.path.match(/^\/forecast\/(.*)$/);
-    if (match) {
-      const query = match[1].replace(/x/g, '.');
-      const coords = query.split(',');
-      const index = forecasts.findIndex(f => f.latitude === +coords[0] && f.longitude === +coords[1]);
-      if (index === -1 || query.startsWith('add')) {
-        el.style.transform = `translateX(-${forecasts.length * window.innerWidth}px)`;
-      } else {
-        el.style.transform = `translateX(-${index * window.innerWidth}px)`;
-      }
+    if (isAddPage()) {
+      carousel.current.style.transform = `translateX(-${forecasts.length * window.innerWidth}px)`;
     } else {
-      el.style.transform = `translateX(0)`;
+      const index = getForecastIndex();
+      if (isForecastPage() && index === -1) {
+        route('/forecast/add');
+      } else {
+        carousel.current.style.transform = `translateX(-${index * window.innerWidth}px)`;
+      }
     }
   }, [navigation.path]);
 
+  // Adds or updates the forecast to the forecasts array.
   function updateForecast(forecast: Forecast) {
     const index = forecasts.findIndex(f => (
       f.latitude === forecast.latitude && f.longitude === forecast.longitude
@@ -49,20 +72,27 @@ export const Forecasts: FunctionalComponent = () => {
     } else {
       newForecasts[index] = forecast;
     }
-    console.log(newForecasts);
     storeForecasts(newForecasts);
     setForecasts(newForecasts);
   }
 
+  // Adds the forecast then routes to it.
+  function addForecast(forecast: Forecast) {
+    updateForecast(forecast);
+    route(encodeForecastPath(forecast));
+  }
+
   const handleLeftClick = () => {
-    // "." breaks deep-linking so replace with "x":
-    const coords = `${forecasts[0].latitude},${forecasts[0].longitude}`.replace(/\./g, 'x');
-    route(`/forecast/${coords}`);
+    route(encodeForecastPath(forecasts[0]));
   }
 
   const handleRightClick = () => {
     route(`/forecast/add`);
   };
+
+  const handlePrefsClick = () => {
+    route(`/preferences`);
+  }
 
   return (
     <div class={style.forecasts}>
@@ -74,21 +104,28 @@ export const Forecasts: FunctionalComponent = () => {
             onForecastUpdate={updateForecast}
           />
         ))}
-        <AddLocation />
+        <AddLocation onAddForecast={addForecast} />
       </div>
       <button
         class={classnames(style.forecasts__btn, style['forecasts__btn--left'])}
-        aria-label="pan right"
+        aria-label="previous"
         onClick={handleLeftClick}
       >
         <IconLeft />
       </button>
       <button
         class={classnames(style.forecasts__btn, style['forecasts__btn--right'])}
-        aria-label="pan right"
+        aria-label="next"
         onClick={handleRightClick}
       >
         <IconRight />
+      </button>
+      <button
+        class={classnames(style.forecasts__btn, style['forecasts__btn--prefs'])}
+        aria-label="preferences"
+        onClick={handlePrefsClick}
+      >
+        Prefs
       </button>
     </div>
   );

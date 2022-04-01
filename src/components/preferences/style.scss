@@ -1,4 +1,11 @@
 .preferences {
+  position: relative;
   background-color: #ccc;
   min-height: 100%;
+
+  &__navbtn {
+    position: absolute;
+    top: 0;
+    left: 50%;
+  }
 }
