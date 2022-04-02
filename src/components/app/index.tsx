@@ -71,8 +71,8 @@ const App: FunctionalComponent = () => {
       dispatch({
         type: 'panning-delta',
         data: {
-          x: deltaX,
-          y: deltaY,
+          x: deltaX * 0.5,
+          y: deltaY * 0.5,
         }
       });
     }

@@ -5,6 +5,7 @@ import classnames from 'classnames';
 import { Preferences } from '../preferences';
 import { Forecasts } from '../forecasts';
 import { NavigationContext, ThemeContext } from '../../contexts';
+import { PANNING_ROUTER_CHANGE } from '../../constants';
 import style from './style.scss';
 
 export const Content: FunctionalComponent = () => {
@@ -28,11 +29,11 @@ export const Content: FunctionalComponent = () => {
         const isPrefs = navigation.prePanningPath.startsWith('/preferences');
         let newPath = navigation.path;
         if (isPrefs) {
-          newPath = navigation.panningDelta.y >= window.innerHeight * 0.25
+          newPath = navigation.panningDelta.y >= window.innerHeight * PANNING_ROUTER_CHANGE
             ? navigation.forecastPath
             : navigation.prePanningPath;
         } else if (!isPrefs) {
-          newPath = navigation.panningDelta.y <= window.innerHeight * -0.25
+          newPath = navigation.panningDelta.y <= window.innerHeight * -PANNING_ROUTER_CHANGE
             ? '/preferences'
             : navigation.prePanningPath;
         }

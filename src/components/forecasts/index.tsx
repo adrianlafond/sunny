@@ -9,8 +9,9 @@ import { Forecast } from '../../services/forecast';
 import { restoreForecasts, storeForecasts } from '../../services/storage';
 import { getDefaultForecast } from '../../services/default-forecast';
 import { NavigationContext } from '../../contexts';
-import style from './style.scss';
 import { decodeForecastPath, encodeForecastPath } from '../../services/paths';
+import { PANNING_ROUTER_CHANGE } from '../../constants';
+import style from './style.scss';
 
 export const Forecasts: FunctionalComponent = () => {
   const [forecasts, setForecasts] = useState<Forecast[]>(restoreForecasts() || [getDefaultForecast()]);
@@ -75,8 +76,8 @@ export const Forecasts: FunctionalComponent = () => {
         const index = getForecastIndex('prePanningPath');
         if (index !== -1 || isAddPage('prePanningPath')) {
           let newPath = navigation.prePanningPath;
-          const goLeft = navigation.panningDelta.x >= window.innerWidth * 0.25;
-          const goRight = navigation.panningDelta.x <= window.innerWidth * -0.25;
+          const goLeft = navigation.panningDelta.x >= window.innerWidth * PANNING_ROUTER_CHANGE;
+          const goRight = navigation.panningDelta.x <= window.innerWidth * -PANNING_ROUTER_CHANGE;
           if (goLeft) {
             if (isAddPage('prePanningPath')) {
               newPath = encodeForecastPath(forecasts[forecasts.length - 1]);
@@ -84,7 +85,7 @@ export const Forecasts: FunctionalComponent = () => {
               newPath = encodeForecastPath(forecasts[index - 1]);
             }
           } else if (goRight) {
-            if (index < forecasts.length - 1) {
+            if (index !== -1 && index < forecasts.length - 1) {
               newPath = encodeForecastPath(forecasts[index + 1]);
             } else {
               newPath = '/forecast/add';
