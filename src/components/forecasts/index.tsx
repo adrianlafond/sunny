@@ -15,27 +15,31 @@ import { decodeForecastPath, encodeForecastPath } from '../../services/paths';
 export const Forecasts: FunctionalComponent = () => {
   const [forecasts, setForecasts] = useState<Forecast[]>(restoreForecasts() || [getDefaultForecast()]);
 
+  // Element upon which translate is applied during navigation and dragging:
   const carousel = useRef<HTMLDivElement>(null);
+
+  // Tracks the offset of current position while dragging:
+  const translateX = useRef(0);
 
   const navigation = useContext(NavigationContext);
 
-  function isAddPage() {
-    return navigation.path.startsWith('/forecast/add');
+  function isAddPage(key: 'forecastPath' | 'prePanningPath' = 'forecastPath') {
+    return navigation[key].startsWith('/forecast/add');
   }
 
-  function isForecastPage() {
-    return navigation.path.startsWith('/forecast');
+  function isForecastPage(key: 'forecastPath' | 'prePanningPath' = 'forecastPath') {
+    return navigation[key] === '/' || navigation[key].startsWith('/forecast');
   }
 
-  function getForecastIndex() {
-    if (navigation.path === '/') {
+  function getForecastIndex(key: 'forecastPath' | 'prePanningPath' = 'forecastPath') {
+    if (navigation[key] === '/') {
       return 0;
     }
-    if (isAddPage()) {
-      return forecasts.length - 1;
+    if (isAddPage(key)) {
+      return -1;
     }
-    if (navigation.path.startsWith('/forecast')) {
-      const coords = decodeForecastPath(navigation.path);
+    if (navigation[key].startsWith('/forecast')) {
+      const coords = decodeForecastPath(navigation[key]);
       if (coords) {
         const { latitude, longitude } = coords;
         return forecasts.findIndex(f => f.latitude === latitude && f.longitude === longitude);
@@ -46,20 +50,54 @@ export const Forecasts: FunctionalComponent = () => {
 
   // On navigation path change, slides the relevant forecast into view.
   useEffect(() => {
-    if (!carousel.current) {
+    if (!carousel.current || navigation.isPanning) {
       return;
     }
     if (isAddPage()) {
-      carousel.current.style.transform = `translateX(-${forecasts.length * window.innerWidth}px)`;
+      translateX.current = forecasts.length * -window.innerWidth;
+      carousel.current.style.transform = `translateX(${translateX.current}px)`;
     } else {
       const index = getForecastIndex();
       if (isForecastPage() && index === -1) {
         route('/forecast/add');
       } else {
-        carousel.current.style.transform = `translateX(-${index * window.innerWidth}px)`;
+        translateX.current = index * -window.innerWidth;
+        carousel.current.style.transform = `translateX(${translateX.current}px)`;
       }
     }
-  }, [navigation.path]);
+  }, [navigation.forecastPath, navigation.isPanning]);
+
+  // Updates the transform translate position while dragging.
+  useEffect(() => {
+    if (navigation.isPanning && carousel.current) {
+      const { x } = navigation.panningDelta;
+      if (isForecastPage('prePanningPath') && navigation.panningRouteChangeAxis === 'x') {
+        const index = getForecastIndex('prePanningPath');
+        if (index !== -1 || isAddPage('prePanningPath')) {
+          let newPath = navigation.prePanningPath;
+          const goLeft = navigation.panningDelta.x >= window.innerWidth * 0.25;
+          const goRight = navigation.panningDelta.x <= window.innerWidth * -0.25;
+          if (goLeft) {
+            if (isAddPage('prePanningPath')) {
+              newPath = encodeForecastPath(forecasts[forecasts.length - 1]);
+            } else if (index > 0) {
+              newPath = encodeForecastPath(forecasts[index - 1]);
+            }
+          } else if (goRight) {
+            if (index < forecasts.length - 1) {
+              newPath = encodeForecastPath(forecasts[index + 1]);
+            } else {
+              newPath = '/forecast/add';
+            }
+          }
+          if (navigation.path !== newPath) {
+            route(newPath);
+          }
+        }
+      }
+      carousel.current.style.transform = `translateX(${x + translateX.current}px)`;
+    }
+  }, [navigation.isPanning, navigation.panningDelta]);
 
   // Adds or updates the forecast to the forecasts array.
   function updateForecast(forecast: Forecast) {
@@ -83,20 +121,47 @@ export const Forecasts: FunctionalComponent = () => {
   }
 
   const handleLeftClick = () => {
-    route(encodeForecastPath(forecasts[0]));
+    if (isAddPage()) {
+      route(encodeForecastPath(forecasts[forecasts.length - 1]));
+    } else {
+      const index = getForecastIndex();
+      if (index === -1) {
+        route('/');
+      } else if (index > 0) {
+        route(encodeForecastPath(forecasts[index - 1]));
+      }
+    }
   }
 
   const handleRightClick = () => {
-    route(`/forecast/add`);
+    if (isAddPage()) {
+      return;
+    }
+    const index = getForecastIndex();
+    if (index === -1) {
+      route('/');
+    } else if (index < forecasts.length - 1) {
+      route(encodeForecastPath(forecasts[index + 1]));
+    } else {
+      route('/forecast/add');
+    }
   };
 
   const handlePrefsClick = () => {
     route(`/preferences`);
   }
 
+  const handleDown = (event: MouseEvent) => {
+    event.stopImmediatePropagation();
+  }
+
+  const carouselClass = classnames(style.forecasts__carousel, {
+    [style['forecasts__carousel--dragging']]: navigation.isPanning,
+  });
+
   return (
     <div class={style.forecasts}>
-      <div class={style.forecasts__carousel} ref={carousel}>
+      <div class={carouselClass} ref={carousel}>
         {forecasts.map(forecast => (
           <ForecastLocation
             key={`${forecast.latitude},${forecast.longitude}`}
@@ -110,6 +175,7 @@ export const Forecasts: FunctionalComponent = () => {
         class={classnames(style.forecasts__btn, style['forecasts__btn--left'])}
         aria-label="previous"
         onClick={handleLeftClick}
+        onMouseDown={handleDown}
       >
         <IconLeft />
       </button>
@@ -117,6 +183,7 @@ export const Forecasts: FunctionalComponent = () => {
         class={classnames(style.forecasts__btn, style['forecasts__btn--right'])}
         aria-label="next"
         onClick={handleRightClick}
+        onMouseDown={handleDown}
       >
         <IconRight />
       </button>
@@ -124,6 +191,7 @@ export const Forecasts: FunctionalComponent = () => {
         class={classnames(style.forecasts__btn, style['forecasts__btn--prefs'])}
         aria-label="preferences"
         onClick={handlePrefsClick}
+        onMouseDown={handleDown}
       >
         Prefs
       </button>

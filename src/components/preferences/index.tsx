@@ -7,11 +7,15 @@ import style from './style.scss';
 import { NavigationContext } from '../../contexts';
 
 export const Preferences: FunctionalComponent = () => {
-  const { mostRecentForecast } = useContext(NavigationContext);
+  const { forecastPath } = useContext(NavigationContext);
 
   const handleForecastsClick = () => {
-    route(mostRecentForecast);
+    route(forecastPath);
   };
+
+  const handleDown = (event: MouseEvent) => {
+    event.stopImmediatePropagation();
+  }
 
   return (
     <div class={classnames(page.page, style.preferences)}>
@@ -19,6 +23,7 @@ export const Preferences: FunctionalComponent = () => {
       <button
         class={style.preferences__navbtn}
         onClick={handleForecastsClick}
+        onMouseDown={handleDown}
       >
         forecasts
       </button>

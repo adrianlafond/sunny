@@ -1,29 +1,109 @@
 import { FunctionalComponent, h } from 'preact';
 import { Router, RouterOnChangeArgs } from 'preact-router';
-import { useContext, useEffect } from 'preact/hooks';
-import { SpatialNavigation } from '../spatial-navigation';
-import { NavigationContext } from '../../contexts';
+import { useEffect, useReducer, useRef } from 'preact/hooks';
+import { NavigationContext, NavigationContextProps, defaultNavigationContext } from '../../contexts';
+import { Content } from '../content';
 import style from './style.scss';
 
-const App: FunctionalComponent = () => {
-  const navigation = useContext(NavigationContext);
+type NavigationActionType = {
+  type: 'path-change';
+  data: RouterOnChangeArgs;
+} | {
+  type: 'panning-delta';
+  data: NavigationContextProps['panningDelta'];
+} | {
+  type: 'panning-stop';
+  data: null;
+}
 
-  // TODO: drive spatial navigation instead of pages via URL
+function navigationReducer(
+  state: NavigationContextProps,
+  action: NavigationActionType): NavigationContextProps {
+  const { type, data}  = action;
+  switch (type) {
+    case 'path-change':
+      return {
+        ...state,
+        path: data.url,
+        forecastPath: data.url === '/' || data.url.startsWith('/forecast')
+          ? data.url
+          : state.forecastPath,
+      };
+    case 'panning-delta':
+      return {
+        ...state,
+        prePanningPath: state.isPanning ? state.prePanningPath : state.path,
+        isPanning: true,
+        panningDelta: data,
+        panningRouteChangeAxis: Math.abs(data.x) >= Math.abs(data.y) ? 'x' : 'y',
+      };
+    case 'panning-stop':
+      return {
+        ...state,
+        isPanning: false,
+      };
+  }
+}
+
+const App: FunctionalComponent = () => {
+  const dragStart = useRef({ x: 0, y: 0 });
+
+  const [navigation, dispatch] = useReducer(navigationReducer, defaultNavigationContext);
+
   function handleRouterChange(event: RouterOnChangeArgs) {
-    navigation.path = event.url;
-    if (navigation.path === '/' || navigation.path.startsWith('/forecast')) {
-      navigation.mostRecentForecast = navigation.path;
+    dispatch({
+      type: 'path-change',
+      data: event,
+    });
+  }
+
+  function handleMouseDown(event: MouseEvent) {
+    dragStart.current.x = event.clientX;
+    dragStart.current.y = event.clientY;
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseup', handleMouseUp);
+  }
+
+  function handleMouseMove(event: MouseEvent) {
+    const deltaX = event.clientX - dragStart.current.x;
+    const deltaY = event.clientY - dragStart.current.y;
+    if (deltaX !== 0 || deltaY !== 0) {
+      dispatch({
+        type: 'panning-delta',
+        data: {
+          x: deltaX,
+          y: deltaY,
+        }
+      });
     }
   }
 
+  function handleMouseUp() {
+    stopDragging();
+  }
+
+  function stopDragging() {
+    dispatch({ type: 'panning-stop', data: null });
+    window.removeEventListener('mousemove', handleMouseMove);
+    window.removeEventListener('mouseup', handleMouseUp);
+  }
+
+  useEffect(() => {
+    window.addEventListener('mousedown', handleMouseDown);
+    return () => {
+      window.removeEventListener('mousedown', handleMouseDown);
+      stopDragging();
+    };
+  }, []);
+
   return (
-    <main class={style.app}>
-      <NavigationContext.Provider value={navigation}>
+    <NavigationContext.Provider value={navigation}>
+      <main class={style.app}>
         <Router onChange={handleRouterChange}>
-          <SpatialNavigation default />
+          <Content default />
         </Router>
-      </NavigationContext.Provider>
-    </main>
+      </main>
+    </NavigationContext.Provider>
   );
 };
 

@@ -1,7 +1,9 @@
 .preferences {
   position: relative;
   background-color: #ccc;
-  min-height: 100%;
+  padding: 0;
+  overflow: hidden;
+  height: 100vh;
 
   &__navbtn {
     position: absolute;

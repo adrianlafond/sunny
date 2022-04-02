@@ -1,11 +1,26 @@
 import { createContext } from 'preact';
 
-export const NavigationContext = createContext<{
+export interface NavigationContextProps {
   path: string;
-  mostRecentForecast: string;
-  dragging: boolean;
-}>({
+  forecastPath: string;
+  prePanningPath: string;
+  isPanning: boolean;
+  panningDelta: {
+    x: number;
+    y: number;
+  };
+  panningRouteChangeAxis: 'x' | 'y';
+}
+
+export const defaultNavigationContext: NavigationContextProps = {
   path: '/',
-  mostRecentForecast: '/',
-  dragging: false,
+  forecastPath: '/',
+  prePanningPath: '/',
+  isPanning: false,
+  panningDelta: { x: 0, y: 0 },
+  panningRouteChangeAxis: 'x',
+};
+
+export const NavigationContext = createContext<NavigationContextProps>({
+  ...defaultNavigationContext,
 });
