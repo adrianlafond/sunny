@@ -1,6 +1,7 @@
 import { FunctionalComponent, h } from 'preact';
 import { Router, RouterOnChangeArgs } from 'preact-router';
 import { useEffect, useReducer, useRef } from 'preact/hooks';
+import classnames from 'classnames';
 import { NavigationContext, NavigationContextProps, defaultNavigationContext } from '../../contexts';
 import { Content } from '../content';
 import style from './style.scss';
@@ -50,6 +51,8 @@ const App: FunctionalComponent = () => {
 
   const [navigation, dispatch] = useReducer(navigationReducer, defaultNavigationContext);
 
+  const isGrabbing = useRef(false);
+
   function handleRouterChange(event: RouterOnChangeArgs) {
     dispatch({
       type: 'path-change',
@@ -58,6 +61,7 @@ const App: FunctionalComponent = () => {
   }
 
   function handleMouseDown(event: MouseEvent) {
+    isGrabbing.current = true;
     dragStart.current.x = event.clientX;
     dragStart.current.y = event.clientY;
     window.addEventListener('mousemove', handleMouseMove);
@@ -83,6 +87,7 @@ const App: FunctionalComponent = () => {
   }
 
   function stopDragging() {
+    isGrabbing.current = false;
     dispatch({ type: 'panning-stop', data: null });
     window.removeEventListener('mousemove', handleMouseMove);
     window.removeEventListener('mouseup', handleMouseUp);
@@ -96,9 +101,13 @@ const App: FunctionalComponent = () => {
     };
   }, []);
 
+  const appClass = classnames(style.app, {
+    [style['app--panning']]: isGrabbing.current,
+  });
+
   return (
     <NavigationContext.Provider value={navigation}>
-      <main class={style.app}>
+      <main class={appClass}>
         <Router onChange={handleRouterChange}>
           <Content default />
         </Router>

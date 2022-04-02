@@ -1,3 +1,8 @@
 .app {
   height: 100%;
+  cursor: grab;
+
+  &--panning {
+    cursor: grabbing;
+  }
 }
