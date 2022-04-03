@@ -60,6 +60,7 @@ export const Content: FunctionalComponent = () => {
       } else if (navigation.path.startsWith('/add')) {
         translateY.current = 0;
       } else {
+        // TODO: call global 404 navigation method.
         route('/add');
         return;
       }
@@ -76,7 +77,7 @@ export const Content: FunctionalComponent = () => {
   }
 
   function addForecast(forecast: Forecast) {
-    //
+    // route(encodeForecastPath(forecast));
   }
 
   const contentClass = classnames(style.content, {

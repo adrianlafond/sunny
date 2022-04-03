@@ -24,10 +24,6 @@ export const Forecasts: FunctionalComponent = () => {
 
   const navigation = useContext(NavigationContext);
 
-  function isAddPage(key: 'forecastPath' | 'prePanningPath' = 'forecastPath') {
-    return navigation[key].startsWith('/forecast/add');
-  }
-
   function isForecastPage(key: 'forecastPath' | 'prePanningPath' = 'forecastPath') {
     return navigation[key] === '/' || navigation[key].startsWith('/forecast');
   }
@@ -35,9 +31,6 @@ export const Forecasts: FunctionalComponent = () => {
   function getForecastIndex(key: 'forecastPath' | 'prePanningPath' = 'forecastPath') {
     if (navigation[key] === '/') {
       return 0;
-    }
-    if (isAddPage(key)) {
-      return -1;
     }
     if (navigation[key].startsWith('/forecast')) {
       const coords = decodeForecastPath(navigation[key]);
@@ -54,17 +47,13 @@ export const Forecasts: FunctionalComponent = () => {
     if (!carousel.current || navigation.isPanning) {
       return;
     }
-    if (isAddPage()) {
-      translateX.current = forecasts.length * -window.innerWidth;
-      carousel.current.style.transform = `translateX(${translateX.current}px)`;
+    const index = getForecastIndex();
+    if (isForecastPage() && index === -1) {
+      // TODO: call global 404 navigation method.
+      route('/add');
     } else {
-      const index = getForecastIndex();
-      if (isForecastPage() && index === -1) {
-        route('/forecast/add');
-      } else {
-        translateX.current = index * -window.innerWidth;
-        carousel.current.style.transform = `translateX(${translateX.current}px)`;
-      }
+      translateX.current = index * -window.innerWidth;
+      carousel.current.style.transform = `translateX(${translateX.current}px)`;
     }
   }, [navigation.forecastPath, navigation.isPanning]);
 
@@ -74,22 +63,14 @@ export const Forecasts: FunctionalComponent = () => {
       const { x } = navigation.panningDelta;
       if (isForecastPage('prePanningPath') && navigation.panningRouteChangeAxis === 'x') {
         const index = getForecastIndex('prePanningPath');
-        if (index !== -1 || isAddPage('prePanningPath')) {
+        if (index !== -1) {
           let newPath = navigation.prePanningPath;
           const goLeft = navigation.panningDelta.x >= window.innerWidth * PANNING_ROUTER_CHANGE;
           const goRight = navigation.panningDelta.x <= window.innerWidth * -PANNING_ROUTER_CHANGE;
-          if (goLeft) {
-            if (isAddPage('prePanningPath')) {
-              newPath = encodeForecastPath(forecasts[forecasts.length - 1]);
-            } else if (index > 0) {
-              newPath = encodeForecastPath(forecasts[index - 1]);
-            }
-          } else if (goRight) {
-            if (index !== -1 && index < forecasts.length - 1) {
-              newPath = encodeForecastPath(forecasts[index + 1]);
-            } else {
-              newPath = '/forecast/add';
-            }
+          if (goLeft && index > 0) {
+            newPath = encodeForecastPath(forecasts[index - 1]);
+          } else if (goRight && index < forecasts.length - 1) {
+            newPath = encodeForecastPath(forecasts[index + 1]);
           }
           if (navigation.path !== newPath) {
             route(newPath);
@@ -115,41 +96,26 @@ export const Forecasts: FunctionalComponent = () => {
     setForecasts(newForecasts);
   }
 
-  // Adds the forecast then routes to it.
-  function addForecast(forecast: Forecast) {
-    updateForecast(forecast);
-    route(encodeForecastPath(forecast));
-  }
-
   const handleLeftClick = () => {
-    if (isAddPage()) {
-      route(encodeForecastPath(forecasts[forecasts.length - 1]));
-    } else {
-      const index = getForecastIndex();
-      if (index === -1) {
-        route('/');
-      } else if (index > 0) {
-        route(encodeForecastPath(forecasts[index - 1]));
-      }
+    const index = getForecastIndex();
+    if (index > 0) {
+      route(encodeForecastPath(forecasts[index - 1]));
     }
   }
 
   const handleRightClick = () => {
-    if (isAddPage()) {
-      return;
-    }
     const index = getForecastIndex();
-    if (index === -1) {
-      route('/');
-    } else if (index < forecasts.length - 1) {
+    if (index < forecasts.length - 1) {
       route(encodeForecastPath(forecasts[index + 1]));
-    } else {
-      route('/forecast/add');
     }
   };
 
   const handlePrefsClick = () => {
     route(`/preferences`);
+  }
+
+  const handleAddClick = () => {
+    route(`/add`);
   }
 
   const handleDown = (event: MouseEvent) => {
@@ -170,7 +136,6 @@ export const Forecasts: FunctionalComponent = () => {
             onForecastUpdate={updateForecast}
           />
         ))}
-        <AddLocation onAddForecast={addForecast} />
       </div>
       <button
         class={classnames(style.forecasts__btn, style['forecasts__btn--left'])}
@@ -195,6 +160,14 @@ export const Forecasts: FunctionalComponent = () => {
         onMouseDown={handleDown}
       >
         Prefs
+      </button>
+      <button
+        class={classnames(style.forecasts__btn, style['forecasts__btn--add'])}
+        aria-label="add forecast"
+        onClick={handleAddClick}
+        onMouseDown={handleDown}
+      >
+        Add Forecast
       </button>
     </div>
   );
