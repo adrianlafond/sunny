@@ -3,14 +3,13 @@ import { useContext, useEffect, useMemo, useRef, useState } from 'preact/hooks';
 import { route } from 'preact-router';
 import classnames from 'classnames';
 import { IconLeft, IconRight } from '../icons';
-import { AddLocation } from '../add-location';
 import { ForecastLocation } from '../forecast-location';
 import { Forecast } from '../../services/forecast';
 import { restoreForecasts, storeForecasts } from '../../services/storage';
 import { getDefaultForecast } from '../../services/default-forecast';
 import { NavigationContext } from '../../contexts';
 import { decodeForecastPath, encodeForecastPath } from '../../services/paths';
-import { PANNING_ROUTER_CHANGE } from '../../constants';
+import { NOT_FOUND, PANNING_ROUTER_CHANGE } from '../../constants';
 import style from './style.scss';
 
 export const Forecasts: FunctionalComponent = () => {
@@ -49,8 +48,7 @@ export const Forecasts: FunctionalComponent = () => {
     }
     const index = getForecastIndex();
     if (isForecastPage() && index === -1) {
-      // TODO: call global 404 navigation method.
-      route('/add');
+      route(NOT_FOUND);
     } else {
       translateX.current = index * -window.innerWidth;
       carousel.current.style.transform = `translateX(${translateX.current}px)`;

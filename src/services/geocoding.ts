@@ -11,6 +11,7 @@ interface RawResponseLocation {
   name: string;
   latitude: number;
   longitude: number;
-  country_code: string; // https://en.wikipedia.org/wiki/List_of_FIPS_country_codes
+  country: string;
+  admin1: string; // state for United States, province for Canada, etc
   timezone: string;
 }

@@ -5,10 +5,10 @@ import classnames from 'classnames';
 import { Preferences } from '../preferences';
 import { Forecasts } from '../forecasts';
 import { NavigationContext, ThemeContext } from '../../contexts';
-import { PANNING_ROUTER_CHANGE } from '../../constants';
-import style from './style.scss';
+import { NOT_FOUND, PANNING_ROUTER_CHANGE } from '../../constants';
 import { AddLocation } from '../add-location';
 import { Forecast } from '../../services/forecast';
+import style from './style.scss';
 
 export const Content: FunctionalComponent = () => {
   const theme = useContext(ThemeContext);
@@ -60,8 +60,7 @@ export const Content: FunctionalComponent = () => {
       } else if (navigation.path.startsWith('/add')) {
         translateY.current = 0;
       } else {
-        // TODO: call global 404 navigation method.
-        route('/add');
+        route(NOT_FOUND);
         return;
       }
       scroll.current.style.transform = `translateY(${translateY.current}px)`;
