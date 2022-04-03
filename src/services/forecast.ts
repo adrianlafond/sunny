@@ -35,7 +35,7 @@ export interface Forecast {
   timestamp: number;
 }
 
-// Raw response from Open Meteo API
+// Raw response from Open-Meteo API
 interface RawResponse {
   latitude: number;
   longitude: number;
