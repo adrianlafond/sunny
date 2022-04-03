@@ -13,6 +13,7 @@
   }
 
   &__scroll {
+    padding: 0;
     transition: transform 0.3s ease-in-out;
 
     &--dragging {

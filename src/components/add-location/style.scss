@@ -1,3 +1,9 @@
 .addlocation {
   background-color: #888;
+
+  &__navbtn {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+  }
 }
