@@ -1,13 +1,13 @@
 import { Forecast } from './forecast';
 
 /**
- * Returns a default forecast value so something can initially show.
+ * Creates a data object with placeholder values for a new forecast.
  */
-export function getDefaultForecast(): Forecast {
+export function createStubForecast(name: string, latitude: number, longitude: number): Forecast {
   return {
-    name: 'Brooklyn',
-    latitude: 40.6501,
-    longitude: -73.94958,
+    name,
+    latitude,
+    longitude,
     elevation: 0,
     utcOffsetSeconds: 0,
     temperatureUnit: '°C',
@@ -22,4 +22,11 @@ export function getDefaultForecast(): Forecast {
     daily: [],
     timestamp: new Date(0).valueOf(),
   };
+}
+
+/**
+ * Returns a default forecast value so something can initially show.
+ */
+export function getDefaultForecast(): Forecast {
+  return createStubForecast('Brooklyn', 40.6501, -73.94958);
 }
