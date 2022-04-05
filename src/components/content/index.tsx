@@ -20,11 +20,15 @@ export const Content: FunctionalComponent = () => {
   const theme = useContext(ThemeContext);
   const navigation = useContext(NavigationContext);
 
-  // Adds or updates the forecast to the forecasts array.
-  const updateForecast = useCallback((forecast: Forecast) => {
-    const index = forecastsContext.forecasts.findIndex(f => (
+  function getForecastIndex(forecast: Forecast) {
+    return forecastsContext.forecasts.findIndex(f => (
       f.latitude === forecast.latitude && f.longitude === forecast.longitude
     ));
+  }
+
+  // Adds or updates the forecast to the forecasts array.
+  const updateForecast = useCallback((forecast: Forecast) => {
+    const index = getForecastIndex(forecast);
     const forecasts = forecastsContext.forecasts.slice();
     if (index === -1) {
       forecasts.push(forecast);
@@ -43,9 +47,23 @@ export const Content: FunctionalComponent = () => {
     route(encodeForecastPath(forecast));
   }, []);
 
+  const removeForecast = useCallback((forecast: Forecast) => {
+    const index = getForecastIndex(forecast);
+    if (index !== -1) {
+      const forecasts = forecastsContext.forecasts.slice();
+      forecasts.splice(index, 1);
+      storeForecasts(forecasts);
+      setForecastsContext({
+        ...forecastsContext,
+        forecasts,
+      });
+    }
+  }, []);
+
   const [forecastsContext, setForecastsContext] = useState<ForecastContextProps>({
     updateForecast,
     addForecast,
+    removeForecast,
     forecasts: restoreForecasts() || [getDefaultForecast()],
   });
 
