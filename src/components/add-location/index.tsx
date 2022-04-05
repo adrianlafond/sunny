@@ -3,24 +3,26 @@ import { useContext, useState } from 'preact/hooks';
 import { route } from 'preact-router';
 import classnames from 'classnames';
 import { Forecast } from '../../services/forecast';
-import { NavigationContext } from '../../contexts';
+import { ForecastContext, NavigationContext } from '../../contexts';
 import { NOT_FOUND } from '../../constants';
 
 import page from '../shared/page.scss';
 import style from './style.scss';
-import { getLocationCoords, Locations } from '../../services/geocoding';
+import { getLocationCoords, Location, Locations } from '../../services/geocoding';
+import { createStubForecast } from '../../services';
 
 interface AddLocationProps {
   onAddForecast: (forecast: Forecast) => void;
 }
 
 export const AddLocation: FunctionalComponent<AddLocationProps> = () => {
-  const navigation = useContext(NavigationContext);
+  const navigationContext = useContext(NavigationContext);
+  const forecastsContext = useContext(ForecastContext);
 
   const [locations, setLocations] = useState<Locations>([]);
 
   const handleForecastsClick = () => {
-    route(navigation.forecastPath);
+    route(navigationContext.forecastPath);
   };
 
   const handleDown = (event: MouseEvent) => {
@@ -42,18 +44,28 @@ export const AddLocation: FunctionalComponent<AddLocationProps> = () => {
     }
   }
 
+  function handleAddLocation(location: Location) {
+    const { name, latitude, longitude } = location;
+    forecastsContext.addForecast(createStubForecast(name, latitude, longitude));
+    setLocations([]);
+  }
+
   return (
     <div class={classnames(page.page, style.addlocation)}>
       <h2>Add Location</h2>
 
-      <h3>context: {navigation.path === NOT_FOUND ? 'Not Found' : 'n/a'}</h3>
+      <h3>context: {navigationContext.path === NOT_FOUND ? 'Not Found' : 'n/a'}</h3>
 
       <form onSubmit={submitGeocode}>
         <input name="location" onInput={handleLocationInput} />
       </form>
 
       {locations.map(loc => (
-        <p><strong>{loc.name}</strong> {loc.state} {loc.country} {loc.latitude}, {loc.longitude}</p>
+        <p>
+          <button onClick={() => handleAddLocation(loc)}>
+            <strong>{loc.name}</strong> {loc.state} {loc.country} {loc.latitude}, {loc.longitude}
+          </button>
+        </p>
       ))}
 
       <button

@@ -1,24 +1,57 @@
 import { FunctionalComponent, h } from 'preact';
-import { useContext, useEffect, useRef, useState } from 'preact/hooks';
+import { useCallback, useContext, useEffect, useRef, useState } from 'preact/hooks';
 import { route } from 'preact-router';
 import classnames from 'classnames';
 import { Preferences } from '../preferences';
 import { Forecasts } from '../forecasts';
-import { NavigationContext, ThemeContext } from '../../contexts';
+import { ForecastContext, ForecastContextProps, NavigationContext, ThemeContext } from '../../contexts';
 import { NOT_FOUND, PANNING_ROUTER_CHANGE } from '../../constants';
 import { AddLocation } from '../add-location';
-import { Forecast } from '../../services/forecast';
+import {
+  encodeForecastPath,
+  Forecast,
+  getDefaultForecast,
+  restoreForecasts,
+  storeForecasts,
+} from '../../services';
 import style from './style.scss';
 
 export const Content: FunctionalComponent = () => {
   const theme = useContext(ThemeContext);
   const navigation = useContext(NavigationContext);
 
-  const [pressed, setPressed] = useState(false);
+  // Adds or updates the forecast to the forecasts array.
+  const updateForecast = useCallback((forecast: Forecast) => {
+    const index = forecastsContext.forecasts.findIndex(f => (
+      f.latitude === forecast.latitude && f.longitude === forecast.longitude
+    ));
+    const forecasts = forecastsContext.forecasts.slice();
+    if (index === -1) {
+      forecasts.push(forecast);
+    } else {
+      forecasts[index] = forecast;
+    }
+    storeForecasts(forecasts);
+    setForecastsContext({
+      ...forecastsContext,
+      forecasts,
+    });
+  }, []);
+
+  const addForecast = useCallback((forecast: Forecast) => {
+    updateForecast(forecast);
+    route(encodeForecastPath(forecast));
+  }, []);
+
+  const [forecastsContext, setForecastsContext] = useState<ForecastContextProps>({
+    updateForecast,
+    addForecast,
+    forecasts: restoreForecasts() || [getDefaultForecast()],
+  });
 
   const scroll = useRef<HTMLDivElement>(null);
 
-  // Tracks the offset of current position while dragging:
+  // Tracks the offset of current position while panning:
   const translateY = useRef(0);
 
   useEffect(() => {
@@ -67,34 +100,21 @@ export const Content: FunctionalComponent = () => {
     }
   }, [navigation.path, navigation.isPanning, navigation.panningDelta]);
 
-  function handlePress() {
-    setPressed(true);
-  }
-
-  function handleUnpress() {
-    setPressed(false);
-  }
-
-  function addForecast(forecast: Forecast) {
-    // route(encodeForecastPath(forecast));
-  }
-
-  const contentClass = classnames(style.content, {
-    [style['content--dragging']]: pressed,
-  });
   const scrollClass = classnames(style.content__scroll, {
-    [style['content__scroll--dragging']]: navigation.isPanning,
+    [style['content__scroll--panning']]: navigation.isPanning,
   });
 
   return (
     <ThemeContext.Provider value={theme}>
-      <div class={contentClass} onMouseDown={handlePress} onMouseUp={handleUnpress}>
-        <div class={scrollClass} ref={scroll}>
-          <AddLocation onAddForecast={addForecast} />
-          <Forecasts />
-          <Preferences />
+      <ForecastContext.Provider value={forecastsContext}>
+        <div class={style.content}>
+          <div class={scrollClass} ref={scroll}>
+            <AddLocation onAddForecast={addForecast} />
+            <Forecasts />
+            <Preferences />
+          </div>
         </div>
-      </div>
+      </ForecastContext.Provider>
     </ThemeContext.Provider>
   );
 };

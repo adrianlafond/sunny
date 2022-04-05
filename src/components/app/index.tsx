@@ -1,6 +1,6 @@
 import { FunctionalComponent, h } from 'preact';
 import { Router, RouterOnChangeArgs } from 'preact-router';
-import { useEffect, useReducer, useRef } from 'preact/hooks';
+import { useEffect, useReducer, useRef, useState } from 'preact/hooks';
 import classnames from 'classnames';
 import { NavigationContext, NavigationContextProps, defaultNavigationContext } from '../../contexts';
 import { Content } from '../content';
@@ -15,6 +15,9 @@ type NavigationActionType = {
 } | {
   type: 'panning-stop';
   data: null;
+} | {
+  type: 'zoom';
+  data: 'in' | 'out';
 }
 
 function navigationReducer(
@@ -43,6 +46,11 @@ function navigationReducer(
         ...state,
         isPanning: false,
       };
+    case 'zoom':
+      return {
+        ...state,
+        zoom: data,
+      }
   }
 }
 
@@ -101,13 +109,18 @@ const App: FunctionalComponent = () => {
     };
   }, []);
 
+  function handleDoubleClick() {
+    dispatch({ type: 'zoom', data: navigation.zoom === 'in'? 'out' : 'in' });
+  }
+
   const appClass = classnames(style.app, {
     [style['app--panning']]: isGrabbing.current,
+    [style['app--zoom-out']]: navigation.zoom === 'out',
   });
 
   return (
     <NavigationContext.Provider value={navigation}>
-      <main class={appClass}>
+      <main class={appClass} onDblClick={handleDoubleClick}>
         <Router onChange={handleRouterChange}>
           <Content default />
         </Router>
