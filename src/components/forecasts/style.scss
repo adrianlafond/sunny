@@ -1,0 +1,39 @@
+.forecasts {
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+
+  &__carousel {
+    min-height: 100vh;
+    height: 100vh;
+    display: flex;
+    transition: transform 0.3s ease-in-out;
+
+    &--dragging {
+      transition: none;
+    }
+  }
+
+  &__btn {
+    position: absolute;
+    width: 48px;
+    padding: 8px;
+
+    &--left {
+      top: 50%;
+      left: 0;
+    }
+    &--right {
+      top: 50%;
+      right: 0;
+    }
+    &--prefs {
+      left: 50%;
+      bottom: 0;
+    }
+    &--add {
+      left: 50%;
+      top: 0;
+    }
+  }
+}

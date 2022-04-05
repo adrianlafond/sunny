@@ -1,0 +1,12 @@
+.icon {
+  &--light {
+    path {
+      fill: black;
+    }
+  }
+  &--dark {
+    path {
+      fill: white;
+    }
+  }
+}
