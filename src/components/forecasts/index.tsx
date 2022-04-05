@@ -115,6 +115,7 @@ export const Forecasts: FunctionalComponent = () => {
             key={`${forecast.latitude},${forecast.longitude}`}
             forecast={forecast}
             onForecastUpdate={forecastsContext.updateForecast}
+            onForecastDelete={forecastsContext.removeForecast}
           />
         ))}
       </div>

@@ -57,6 +57,7 @@ export const Content: FunctionalComponent = () => {
         ...forecastsContext,
         forecasts,
       });
+      route('/');
     }
   }, []);
 

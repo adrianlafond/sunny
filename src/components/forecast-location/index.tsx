@@ -10,11 +10,13 @@ import { IconRight } from '../icons';
 interface ForecastLocationProps {
   forecast: Forecast;
   onForecastUpdate: (forecast: Forecast) => void;
+  onForecastDelete: (forecast: Forecast) => void;
 }
 
 export const ForecastLocation: FunctionalComponent<ForecastLocationProps> = ({
   forecast,
   onForecastUpdate,
+  onForecastDelete,
 }) => {
   useEffect(() => {
     if (Date.now() - forecast.timestamp.valueOf() >= FORECAST_CACHE_TIME) {
@@ -41,6 +43,10 @@ export const ForecastLocation: FunctionalComponent<ForecastLocationProps> = ({
     timestamp: forecast.timestamp ? new Date(forecast.timestamp).toLocaleString() : '-',
   }), [forecast.timestamp]);
 
+  function handleDelete() {
+    onForecastDelete(forecast);
+  }
+
   return (
     <div class={classnames(page.page, style.location)}>
       <h2>{forecast.name}</h2>
@@ -51,9 +57,7 @@ export const ForecastLocation: FunctionalComponent<ForecastLocationProps> = ({
 
       <p>timestamp: {timestamp}</p>
 
-      <p style={{ width: '24px', color: 'white' }}>
-        <IconRight />
-      </p>
+      <button onClick={handleDelete}>Remove Forecast</button>
     </div>
   );
 };
