@@ -1,7 +1,7 @@
 .content {
   transform-origin: 0 0;
   width: 100vw;
-  height: 100vh;
+  height: 100%;
   display: flex;
   flex-direction: column;
   overflow: visible;
@@ -10,6 +10,7 @@
 
   &__scroll {
     padding: 0;
+    height: 100%;
     transition: transform 0.3s ease-in-out;
 
     &--panning {

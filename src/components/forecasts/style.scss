@@ -1,11 +1,11 @@
 .forecasts {
   width: 100vw;
-  height: 100vh;
+  height: 100%;
   position: relative;
 
   &__carousel {
-    min-height: 100vh;
-    height: 100vh;
+    min-height: 100%;
+    height: 100%;
     display: flex;
     transition: transform 0.3s ease-in-out;
 

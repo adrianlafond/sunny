@@ -81,17 +81,39 @@ const App: FunctionalComponent = () => {
     });
   }
 
-  function handleMouseDown(event: MouseEvent) {
-    isGrabbing.current = true;
-    dragStart.current.x = event.clientX;
-    dragStart.current.y = event.clientY;
-    window.addEventListener('mousemove', handleMouseMove);
-    window.addEventListener('mouseup', handleMouseUp);
+  function getInputPosition(event: TouchEvent | MouseEvent) {
+    if ('touches' in event) {
+      return {
+        x: (event as TouchEvent).touches[0].clientX,
+        y: (event as TouchEvent).touches[0].clientY,
+      };
+    }
+    return {
+      x: (event as MouseEvent).clientX,
+      y: (event as MouseEvent).clientY,
+    };
   }
 
-  function handleMouseMove(event: MouseEvent) {
-    const deltaX = event.clientX - dragStart.current.x;
-    const deltaY = event.clientY - dragStart.current.y;
+  function handleTouchStart(event: TouchEvent) {
+    window.removeEventListener('mousedown', handleMouseDown);
+    isGrabbing.current = true;
+    dragStart.current = getInputPosition(event);
+    window.addEventListener('touchmove', handleMove);
+    window.addEventListener('touchend', handleUp);
+    window.addEventListener('touchcancel', handleUp);
+  }
+
+  function handleMouseDown(event: MouseEvent) {
+    isGrabbing.current = true;
+    dragStart.current = getInputPosition(event);
+    window.addEventListener('mousemove', handleMove);
+    window.addEventListener('mouseup', handleUp);
+  }
+
+  function handleMove(event: TouchEvent | MouseEvent) {
+    const position = getInputPosition(event);
+    const deltaX = position.x - dragStart.current.x;
+    const deltaY = position.y - dragStart.current.y;
     if (deltaX !== 0 || deltaY !== 0) {
       dispatch({
         type: 'panning-delta',
@@ -103,18 +125,22 @@ const App: FunctionalComponent = () => {
     }
   }
 
-  function handleMouseUp() {
+  function handleUp() {
     stopDragging();
   }
 
   function stopDragging() {
     isGrabbing.current = false;
     dispatch({ type: 'panning-stop', data: null });
-    window.removeEventListener('mousemove', handleMouseMove);
-    window.removeEventListener('mouseup', handleMouseUp);
+    window.removeEventListener('touchmove', handleMove);
+    window.removeEventListener('touchend', handleUp);
+    window.removeEventListener('touchcancel', handleUp);
+    window.removeEventListener('mousemove', handleMove);
+    window.removeEventListener('mouseup', handleUp);
   }
 
   useEffect(() => {
+    window.addEventListener('touchstart', handleTouchStart);
     window.addEventListener('mousedown', handleMouseDown);
     return () => {
       window.removeEventListener('mousedown', handleMouseDown);
