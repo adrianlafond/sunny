@@ -2,7 +2,16 @@ import { FunctionalComponent, h } from 'preact';
 import { Router, RouterOnChangeArgs } from 'preact-router';
 import { useEffect, useReducer, useRef, useState } from 'preact/hooks';
 import classnames from 'classnames';
-import { NavigationContext, NavigationContextProps, defaultNavigationContext } from '../../contexts';
+import {
+  NavigationContext,
+  NavigationContextProps,
+  defaultNavigationContext,
+  Preferences,
+  PreferencesContext,
+  PreferencesContextProps,
+  defaultPreferences,
+} from '../../contexts';
+import { restorePreferences, storePreferences } from '../../services';
 import { Content } from '../content';
 import style from './style.scss';
 
@@ -58,6 +67,10 @@ const App: FunctionalComponent = () => {
   const dragStart = useRef({ x: 0, y: 0 });
 
   const [navigation, dispatch] = useReducer(navigationReducer, defaultNavigationContext);
+  const [preferencesContext, setPreferencesContext] = useState<PreferencesContextProps>({
+    preferences: restorePreferences() || defaultPreferences,
+    update: updatePreferences,
+  });
 
   const isGrabbing = useRef(false);
 
@@ -113,6 +126,14 @@ const App: FunctionalComponent = () => {
     dispatch({ type: 'zoom', data: navigation.zoom === 'in'? 'out' : 'in' });
   }
 
+  function updatePreferences(preferences: Preferences) {
+    setPreferencesContext({
+      ...preferencesContext,
+      preferences,
+    });
+    storePreferences(preferences);
+  }
+
   const appClass = classnames(style.app, {
     [style['app--panning']]: isGrabbing.current,
     [style['app--zoom-out']]: navigation.zoom === 'out',
@@ -120,11 +141,13 @@ const App: FunctionalComponent = () => {
 
   return (
     <NavigationContext.Provider value={navigation}>
-      <main class={appClass} onDblClick={handleDoubleClick}>
-        <Router onChange={handleRouterChange}>
-          <Content default />
-        </Router>
-      </main>
+      <PreferencesContext.Provider value={preferencesContext}>
+        <main class={appClass} onDblClick={handleDoubleClick}>
+          <Router onChange={handleRouterChange}>
+            <Content default />
+          </Router>
+        </main>
+      </PreferencesContext.Provider>
     </NavigationContext.Provider>
   );
 };

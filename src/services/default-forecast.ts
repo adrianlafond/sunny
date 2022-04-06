@@ -10,7 +10,7 @@ export function createStubForecast(name: string, latitude: number, longitude: nu
     longitude,
     elevation: 0,
     utcOffsetSeconds: 0,
-    temperatureUnit: '°C',
+    temperatureUnit: 'C',
     hourly: [],
     currentWeather: {
       time: new Date().valueOf(),

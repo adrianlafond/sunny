@@ -14,7 +14,7 @@ export interface Forecast {
   longitude: number;
   elevation: number;
   utcOffsetSeconds: number;
-  temperatureUnit: '°C' | '°F';
+  temperatureUnit: 'C' | 'F';
   hourly: {
     time: number;
     temperature: number;
@@ -142,7 +142,7 @@ function convertJsonToData(json: RawResponse & { name: string }): Forecast {
     longitude: json.longitude,
     elevation: json.elevation,
     utcOffsetSeconds: json.utc_offset_seconds,
-    temperatureUnit: json.hourly_units.temperature_2m === '°F' ? '°F' : '°C',
+    temperatureUnit: json.hourly_units.temperature_2m === '°F' ? 'F' : 'C',
     hourly: json.hourly.time.map((time, index) => ({
       time: new Date(time).valueOf(),
       temperature: +json.hourly.temperature_2m[index],

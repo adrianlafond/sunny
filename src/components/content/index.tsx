@@ -2,7 +2,7 @@ import { FunctionalComponent, h } from 'preact';
 import { useCallback, useContext, useEffect, useRef, useState } from 'preact/hooks';
 import { route } from 'preact-router';
 import classnames from 'classnames';
-import { Preferences } from '../preferences';
+import { PreferencesForm } from '../preferences-form';
 import { Forecasts } from '../forecasts';
 import { ForecastContext, ForecastContextProps, NavigationContext, ThemeContext } from '../../contexts';
 import { NOT_FOUND, PANNING_ROUTER_CHANGE } from '../../constants';
@@ -130,7 +130,7 @@ export const Content: FunctionalComponent = () => {
           <div class={scrollClass} ref={scroll}>
             <AddLocation onAddForecast={addForecast} />
             <Forecasts />
-            <Preferences />
+            <PreferencesForm />
           </div>
         </div>
       </ForecastContext.Provider>
