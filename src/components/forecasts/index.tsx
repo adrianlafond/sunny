@@ -1,14 +1,14 @@
 import { FunctionalComponent, h } from 'preact';
 import { useContext, useEffect, useRef } from 'preact/hooks';
-import { Link, route } from 'preact-router';
+import { route } from 'preact-router';
 import classnames from 'classnames';
 import { IconLeft, IconRight } from '../icons';
 import { ForecastLocation } from '../forecast-location';
+import { NoForecasts } from '../no-forecasts';
 import { ForecastContext, NavigationContext } from '../../contexts';
 import { decodeForecastPath, encodeForecastPath } from '../../services';
 import { NOT_FOUND, PANNING_ROUTER_CHANGE } from '../../constants';
 
-import page from '../shared/page.scss';
 import style from './style.scss';
 
 export const Forecasts: FunctionalComponent = () => {
@@ -123,11 +123,7 @@ export const Forecasts: FunctionalComponent = () => {
           ))}
         </div>
       ) : (
-        <div class={page.page}>
-          <h2>No forecasts.</h2>
-
-          <Link href="/add">Add a forecast</Link>
-        </div>
+        <NoForecasts />
       )}
       <button
         class={classnames(style.forecasts__btn, style['forecasts__btn--left'])}
