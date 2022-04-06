@@ -1,11 +1,10 @@
 import { FunctionalComponent, h } from 'preact';
 import { useEffect, useMemo } from 'preact/hooks';
 import classnames from 'classnames';
-import page from '../shared/page.scss';
-import style from './style.scss';
 import { FORECAST_CACHE_TIME } from '../../constants';
 import { Forecast, getForecast } from '../../services/forecast';
-import { IconRight } from '../icons';
+import page from '../shared/page.scss';
+import style from './style.scss';
 
 interface ForecastLocationProps {
   forecast: Forecast;

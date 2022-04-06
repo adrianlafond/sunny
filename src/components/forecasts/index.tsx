@@ -1,12 +1,14 @@
 import { FunctionalComponent, h } from 'preact';
 import { useContext, useEffect, useRef } from 'preact/hooks';
-import { route } from 'preact-router';
+import { Link, route } from 'preact-router';
 import classnames from 'classnames';
 import { IconLeft, IconRight } from '../icons';
 import { ForecastLocation } from '../forecast-location';
 import { ForecastContext, NavigationContext } from '../../contexts';
 import { decodeForecastPath, encodeForecastPath } from '../../services';
 import { NOT_FOUND, PANNING_ROUTER_CHANGE } from '../../constants';
+
+import page from '../shared/page.scss';
 import style from './style.scss';
 
 export const Forecasts: FunctionalComponent = () => {
@@ -109,16 +111,24 @@ export const Forecasts: FunctionalComponent = () => {
 
   return (
     <div class={style.forecasts}>
-      <div class={carouselClass} ref={carousel}>
-        {forecastsContext.forecasts.map(forecast => (
-          <ForecastLocation
-            key={`${forecast.latitude},${forecast.longitude}`}
-            forecast={forecast}
-            onForecastUpdate={forecastsContext.updateForecast}
-            onForecastDelete={forecastsContext.removeForecast}
-          />
-        ))}
-      </div>
+      {forecastsContext.forecasts.length ? (
+        <div class={carouselClass} ref={carousel}>
+          {forecastsContext.forecasts.map(forecast => (
+            <ForecastLocation
+              key={`${forecast.latitude},${forecast.longitude}`}
+              forecast={forecast}
+              onForecastUpdate={forecastsContext.updateForecast}
+              onForecastDelete={forecastsContext.removeForecast}
+            />
+          ))}
+        </div>
+      ) : (
+        <div class={page.page}>
+          <h2>No forecasts.</h2>
+
+          <Link href="/add">Add a forecast</Link>
+        </div>
+      )}
       <button
         class={classnames(style.forecasts__btn, style['forecasts__btn--left'])}
         aria-label="previous"
