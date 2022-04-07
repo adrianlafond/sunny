@@ -5,6 +5,7 @@ import classnames from 'classnames';
 import { Forecast } from '../../services/forecast';
 import { ForecastContext, NavigationContext } from '../../contexts';
 import { NOT_FOUND } from '../../constants';
+import { NavigationButton } from '../navigation-button';
 
 import page from '../shared/page.scss';
 import style from './style.scss';
@@ -24,10 +25,6 @@ export const AddLocation: FunctionalComponent<AddLocationProps> = () => {
   const handleForecastsClick = () => {
     route(navigationContext.forecastPath);
   };
-
-  const handleDown = (event: MouseEvent) => {
-    event.stopImmediatePropagation();
-  }
 
   const submitGeocode = (event: Event) => {
     event.preventDefault();
@@ -68,13 +65,11 @@ export const AddLocation: FunctionalComponent<AddLocationProps> = () => {
         </p>
       ))}
 
-      <button
-        class={style.addlocation__navbtn}
+      <NavigationButton
         onClick={handleForecastsClick}
-        onMouseDown={handleDown}
-      >
-        forecasts
-      </button>
+        position="bottom">
+        FORECASTS
+      </NavigationButton>
     </div>
   );
 };

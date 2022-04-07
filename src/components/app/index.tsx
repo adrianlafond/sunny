@@ -10,6 +10,9 @@ import {
   PreferencesContext,
   PreferencesContextProps,
   defaultPreferences,
+  ZoomContext,
+  ZoomContextProps,
+  defaultZoomContext,
 } from '../../contexts';
 import { restorePreferences, storePreferences } from '../../services';
 import { Content } from '../content';
@@ -24,9 +27,6 @@ type NavigationActionType = {
 } | {
   type: 'panning-stop';
   data: null;
-} | {
-  type: 'zoom';
-  data: 'in' | 'out';
 }
 
 function navigationReducer(
@@ -55,11 +55,6 @@ function navigationReducer(
         ...state,
         isPanning: false,
       };
-    case 'zoom':
-      return {
-        ...state,
-        zoom: data,
-      }
   }
 }
 
@@ -71,6 +66,8 @@ const App: FunctionalComponent = () => {
     preferences: restorePreferences() || defaultPreferences,
     update: updatePreferences,
   });
+
+  const [zoomContext, setZoomContext] = useState<ZoomContextProps>(defaultZoomContext);
 
   const isGrabbing = useRef(false);
 
@@ -149,7 +146,7 @@ const App: FunctionalComponent = () => {
   }, []);
 
   function handleDoubleClick() {
-    dispatch({ type: 'zoom', data: navigation.zoom === 'in'? 'out' : 'in' });
+    setZoomContext({ zoom: zoomContext.zoom === 'in' ? 'out' : 'in' });
   }
 
   function updatePreferences(preferences: Preferences) {
@@ -162,18 +159,20 @@ const App: FunctionalComponent = () => {
 
   const appClass = classnames(style.app, {
     [style['app--panning']]: isGrabbing.current,
-    [style['app--zoom-out']]: navigation.zoom === 'out',
+    [style['app--zoom-out']]: zoomContext.zoom === 'out',
   });
 
   return (
     <NavigationContext.Provider value={navigation}>
-      <PreferencesContext.Provider value={preferencesContext}>
-        <main class={appClass} onDblClick={handleDoubleClick}>
-          <Router onChange={handleRouterChange}>
-            <Content default />
-          </Router>
-        </main>
-      </PreferencesContext.Provider>
+    <PreferencesContext.Provider value={preferencesContext}>
+    <ZoomContext.Provider value={zoomContext}>
+      <main class={appClass} onDblClick={handleDoubleClick}>
+        <Router onChange={handleRouterChange}>
+          <Content default />
+        </Router>
+      </main>
+    </ZoomContext.Provider>
+    </PreferencesContext.Provider>
     </NavigationContext.Provider>
   );
 };
