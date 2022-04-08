@@ -6,11 +6,12 @@ import { Forecast } from '../../services/forecast';
 import { ForecastContext, NavigationContext } from '../../contexts';
 import { NOT_FOUND } from '../../constants';
 import { NavigationButton } from '../navigation-button';
-
-import page from '../shared/page.scss';
-import style from './style.scss';
 import { getLocationCoords, Location, Locations } from '../../services/geocoding';
 import { createStubForecast } from '../../services';
+
+import page from '../shared/page.scss';
+import typography from '../shared/typography.scss';
+import style from './style.scss';
 
 interface AddLocationProps {
   onAddForecast: (forecast: Forecast) => void;
@@ -49,7 +50,7 @@ export const AddLocation: FunctionalComponent<AddLocationProps> = () => {
 
   return (
     <div class={classnames(page.page, style.addlocation)}>
-      <h2>Add Location</h2>
+      <h2 class={typography.h2}>ADD LOCATION</h2>
 
       <h3>context: {navigationContext.path === NOT_FOUND ? 'Not Found' : 'n/a'}</h3>
 
@@ -67,8 +68,10 @@ export const AddLocation: FunctionalComponent<AddLocationProps> = () => {
 
       <NavigationButton
         onClick={handleForecastsClick}
-        position="bottom">
-        FORECASTS
+        path="/add"
+        position="bottom"
+      >
+        forecasts
       </NavigationButton>
     </div>
   );

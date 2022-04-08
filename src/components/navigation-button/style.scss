@@ -2,8 +2,7 @@
 
 .navbtn {
   position: absolute;
-  width: 48px;
-  height: 48px;
+  height: 72px;
   white-space: nowrap;
   font-family: $font-family;
   font-size: 18px;
@@ -11,14 +10,29 @@
   cursor: pointer;
   display: inline-flex;
   justify-content: center;
+  text-transform: uppercase;
+
+  @media (prefers-color-scheme: dark) {
+    color: $color-dark;
+  }
 
   &,
   &:hover,
   &:focus,
   &:active,
   &:visited {
+    outline: none;
     border: none;
     background: transparent;
+  }
+
+  &:focus {
+    color: $focus-color;
+    background-color: rgba(#000, 0.1);
+    @media (prefers-color-scheme: dark) {
+      color: $focus-color-dark;
+      background-color: rgba(#fff, 0.1);
+    }
   }
 
   &__label {
@@ -26,12 +40,13 @@
     white-space: nowrap;
   }
 
+  // Animate the characters in the label
   &__char {
     overflow: hidden;
     width: 0;
     height: 0;
     transform-origin: center center;
-    transform: translateY(20px) rotate3d(0.5, 0.5, 0.5, 359deg);
+    transform: translateY(20px) rotate(359deg);
     transition:
       width 0.1s ease-out,
       height 0.1s ease-out,
@@ -41,7 +56,7 @@
   }
 
   &__char:nth-child(odd) {
-    transform: translateY(20px) rotate3d(0.5, 0.5, 0.5, -359deg);
+    transform: translateY(20px) rotate(-359deg);
   }
 
   @for $index from 1 through 100 {
@@ -50,33 +65,99 @@
     }
   }
 
-  &:hover &__char {
+  &:hover &__char,
+  &:focus &__char,
+  &:active &__char {
     width: 14px;
     height: 20px;
-    transform: translateY(0) rotate3d(0.5, 0.5, 0.5, 0deg);
+    transform: translateY(0) rotate(0);
   }
 
+  // Arrows
+  &::before,
   &::after {
     content: '';
     position: absolute;
   }
 
-  &--bottom {
-    bottom: 8px;
-    left: 50%;
-    transform: translateX(-24px);
+  @mixin arrow-bottom($color) {
+    background: conic-gradient(at 50% 100%,
+      #{$color} 45deg,
+      transparent 45deg 315deg,
+      #{$color} 315deg,
+    );
+  }
 
-    &::after {
-      bottom: 0;
-      left: 12px;
+  &--bottom {
+    padding: 12px 12px 0;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+
+    &::before {
+      bottom: 36px;
+      left: 50%;
       width: 24px;
       height: 12px;
-      background: conic-gradient(
-        at 50% 100%,
-        $color 45deg,
-        transparent 45deg 315deg,
-        $color 315deg,
-      );
+      transform: translateX(-50%);
+      animation-name: fadedown;
+      animation-duration: 1s;
+      animation-delay: 0s;
+      animation-timing-function: ease-out;
+      animation-iteration-count: 999;
+      @include arrow-bottom($color);
+      @media (prefers-color-scheme: dark) {
+        @include arrow-bottom($color-dark);
+      }
+    }
+
+    &::after {
+      bottom: 12px;
+      left: 50%;
+      width: 24px;
+      height: 12px;
+      transition: 0.15s ease-out;
+      transform: translateX(-50%);
+      @include arrow-bottom($color);
+      @media (prefers-color-scheme: dark) {
+        @include arrow-bottom($color-dark);
+      }
+    }
+  }
+
+  &--bottom:hover {
+    &::after {
+      bottom: 10px;
+      width: 32px;
+      height: 16px;
+    }
+  }
+
+  &--bottom:focus {
+    &::before {
+      @include arrow-bottom($focus-color);
+    }
+    &::after {
+      @include arrow-bottom($focus-color);
+    }
+    @media (prefers-color-scheme: dark) {
+      &::before {
+        @include arrow-bottom($focus-color-dark);
+      }
+      &::after {
+        @include arrow-bottom($focus-color-dark);
+      }
+    }
+  }
+
+  @keyframes fadedown {
+    0% {
+      opacity: 0.25;
+      bottom: 12px;
+    }
+    100% {
+      opacity: 0.0;
+      bottom: 36px;
     }
   }
 }
