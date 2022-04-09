@@ -1,7 +1,6 @@
-import { Fragment, FunctionalComponent, h } from 'preact';
+import { FunctionalComponent, h } from 'preact';
 import { useContext } from 'preact/hooks';
-import { route } from 'preact-router';
-import classNames from 'classnames';
+import classnames from 'classnames';
 import { NavigationContext, ZoomContext } from '../../contexts';
 
 import style from './style.scss';
@@ -28,12 +27,12 @@ export const NavigationButton: FunctionalComponent<NavigationButtonProps> = ({
     <button
       {...otherProps}
       tabIndex={naviationContext.path.startsWith(path) ? 0 : -1}
-      class={classNames(className, style.navbtn, style[`navbtn--${position}`])}
+      class={classnames(className, style.navbtn, style[`navbtn--${position}`])}
     >
       <div class={style.navbtn__label}>
         {chars.map((c, i) => (
           <span
-            class={style.navbtn__char}
+            class={classnames(style.navbtn__char, style[`navbtn__char--${position}`])}
           >
             {c}
           </span>

@@ -4,17 +4,13 @@
   position: absolute;
   height: 72px;
   white-space: nowrap;
-  font-family: $font-family;
+  font-family: var(--font-family);
   font-size: 18px;
-  color: $color;
+  color: var(--color);
   cursor: pointer;
   display: inline-flex;
   justify-content: center;
   text-transform: uppercase;
-
-  @media (prefers-color-scheme: dark) {
-    color: $color-dark;
-  }
 
   &,
   &:hover,
@@ -27,13 +23,9 @@
   }
 
   &:focus {
-    color: $color-dark;
-    background: #222;
+    color: var(--bgcolor);
+    background: var(--bgcolor);
     background: linear-gradient(180deg, #222 0%, #222 20%, transparent 100%);
-    @media (prefers-color-scheme: dark) {
-      color: $color;
-      background-color: #fff;
-    }
   }
 
   &__label {
@@ -47,17 +39,26 @@
     width: 0;
     height: 0;
     transform-origin: center center;
-    transform: translateY(20px) rotate(359deg);
     transition:
       width 0.1s ease-out,
       height 0.1s ease-out,
       transform 0.8s ease-out;
     display: inline-block;
     transition-delay: 0s;
-  }
 
-  &__char:nth-child(odd) {
-    transform: translateY(20px) rotate(-359deg);
+    &--top {
+      transform: translateY(16px) rotate(359deg);
+    }
+    &--bottom {
+      transform: translateY(20px) rotate(359deg);
+    }
+
+    &--top:nth-child(odd) {
+      transform: translateY(16px) rotate(-359deg);
+    }
+    &--bottom:nth-child(odd) {
+      transform: translateY(20px) rotate(-359deg);
+    }
   }
 
   @for $index from 1 through 100 {
@@ -71,6 +72,15 @@
   &:active &__char {
     width: 14px;
     height: 20px;
+  }
+  &:hover &__char--top,
+  &:focus &__char--top,
+  &:active &__char--top {
+    transform: translateY(36px) rotate(0);
+  }
+  &:hover &__char--bottom,
+  &:focus &__char--bottom,
+  &:active &__char--bottom {
     transform: translateY(0) rotate(0);
   }
 
@@ -81,12 +91,75 @@
     position: absolute;
   }
 
+  &::before {
+    animation-duration: 1s;
+    animation-delay: 0s;
+    animation-timing-function: ease-out;
+    animation-iteration-count: infinite;
+  }
+
+  @mixin arrow-top($color) {
+    background: conic-gradient(at 50% 0%,
+      transparent 0deg 135deg,
+      #{$color} 135deg 225deg,
+      transparent 225deg,
+    );
+  }
+
   @mixin arrow-bottom($color) {
     background: conic-gradient(at 50% 100%,
       #{$color} 45deg,
       transparent 45deg 315deg,
       #{$color} 315deg,
     );
+  }
+
+  &--top {
+    padding: 0 12px 12px;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+
+    &::before {
+      top: 36px;
+      left: 50%;
+      width: 24px;
+      height: 12px;
+      transform: translateX(-50%);
+      animation-name: fadeup;
+      @include arrow-top(var(--color));
+    }
+
+    &::after {
+      top: 12px;
+      left: 50%;
+      width: 24px;
+      height: 12px;
+      transition: 0.15s ease-out;
+      transform: translateX(-50%);
+      @include arrow-top(var(--color));
+    }
+  }
+
+  &--top:hover {
+    &::after {
+      top: 10px;
+      width: 32px;
+      height: 16px;
+    }
+  }
+
+  &--top:focus {
+    &::before,
+    &::after {
+      @include arrow-top(var(--bgcolor));
+    }
+    @media (prefers-color-scheme: dark) {
+      &::before,
+      &::after {
+        @include arrow-top(var(--color));
+      }
+    }
   }
 
   &--bottom {
@@ -102,14 +175,7 @@
       height: 12px;
       transform: translateX(-50%);
       animation-name: fadedown;
-      animation-duration: 1s;
-      animation-delay: 0s;
-      animation-timing-function: ease-out;
-      animation-iteration-count: infinite;
-      @include arrow-bottom($color);
-      @media (prefers-color-scheme: dark) {
-        @include arrow-bottom($color-dark);
-      }
+      @include arrow-bottom(var(--color));
     }
 
     &::after {
@@ -119,10 +185,7 @@
       height: 12px;
       transition: 0.15s ease-out;
       transform: translateX(-50%);
-      @include arrow-bottom($color);
-      @media (prefers-color-scheme: dark) {
-        @include arrow-bottom($color-dark);
-      }
+      @include arrow-bottom(var(--color));
     }
   }
 
@@ -135,18 +198,14 @@
   }
 
   &--bottom:focus {
-    &::before {
-      @include arrow-bottom($color-dark);
-    }
+    &::before,
     &::after {
-      @include arrow-bottom($color-dark);
+      @include arrow-bottom(var(--bgcolor));
     }
     @media (prefers-color-scheme: dark) {
-      &::before {
-        @include arrow-bottom($color);
-      }
+      &::before,
       &::after {
-        @include arrow-bottom($color);
+        @include arrow-bottom(var(--color));
       }
     }
   }
@@ -159,6 +218,18 @@
     100% {
       opacity: 0.0;
       bottom: 36px;
+    }
+  }
+
+  @keyframes fadeup {
+    0% {
+      opacity: 0.25;
+      top: 36px;
+    }
+
+    100% {
+      opacity: 0.0;
+      top: 12px;
     }
   }
 }

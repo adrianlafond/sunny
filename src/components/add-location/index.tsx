@@ -72,10 +72,6 @@ export const AddLocation: FunctionalComponent<AddLocationProps> = () => {
     route(navigationContext.forecastPath);
   };
 
-  const submitGeocode = (event: Event) => {
-    event.preventDefault();
-  }
-
   const handleLocationInput = async (event: Event) => {
     const input = event.target as HTMLInputElement;
     const response = await getLocationCoords(input.value);
@@ -109,21 +105,20 @@ export const AddLocation: FunctionalComponent<AddLocationProps> = () => {
 
           <h2 class={typography.h2}>add location</h2>
 
-          <form onSubmit={submitGeocode}>
-            <div class={style.addlocation__inputcontainer}>
-              <input
-                class={style.addlocation__input}
-                ref={inputRef}
-                name="location"
-                placeholder="place name or postal code"
-                onInput={handleLocationInput}
-                tabIndex={isAddPage() ? 0 : -1}
-                spellCheck={false}
-                data-lpignore="true"
-                data-addlocation-index="0"
-              />
-            </div>
-          </form>
+          <div class={style.addlocation__inputcontainer}>
+            <input
+              class={style.addlocation__input}
+              ref={inputRef}
+              name="location"
+              placeholder="place name or postal code"
+              onInput={handleLocationInput}
+              tabIndex={isAddPage() ? 0 : -1}
+              spellCheck={false}
+              autoComplete="off"
+              data-lpignore="true"
+              data-addlocation-index="0"
+            />
+          </div>
         </div>
 
         <div

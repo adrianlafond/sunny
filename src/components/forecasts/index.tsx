@@ -5,6 +5,7 @@ import classnames from 'classnames';
 import { IconLeft, IconRight } from '../icons';
 import { ForecastLocation } from '../forecast-location';
 import { NoForecasts } from '../no-forecasts';
+import { NavigationButton } from '../navigation-button';
 import { ForecastContext, NavigationContext } from '../../contexts';
 import { decodeForecastPath, encodeForecastPath } from '../../services';
 import { NOT_FOUND, PANNING_ROUTER_CHANGE } from '../../constants';
@@ -125,6 +126,20 @@ export const Forecasts: FunctionalComponent = () => {
       ) : (
         <NoForecasts />
       )}
+      <NavigationButton
+        onClick={handleAddClick}
+        path="/forecasts"
+        position="top"
+      >
+        add forecast
+      </NavigationButton>
+      <NavigationButton
+        onClick={handlePrefsClick}
+        path="/forecasts"
+        position="bottom"
+      >
+        preferences
+      </NavigationButton>
       <button
         class={classnames(style.forecasts__btn, style['forecasts__btn--left'])}
         aria-label="previous"
@@ -140,22 +155,6 @@ export const Forecasts: FunctionalComponent = () => {
         onMouseDown={handleDown}
       >
         <IconRight />
-      </button>
-      <button
-        class={classnames(style.forecasts__btn, style['forecasts__btn--prefs'])}
-        aria-label="preferences"
-        onClick={handlePrefsClick}
-        onMouseDown={handleDown}
-      >
-        Prefs
-      </button>
-      <button
-        class={classnames(style.forecasts__btn, style['forecasts__btn--add'])}
-        aria-label="add forecast"
-        onClick={handleAddClick}
-        onMouseDown={handleDown}
-      >
-        Add Forecast
       </button>
     </div>
   );
