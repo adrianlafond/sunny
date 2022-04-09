@@ -18,6 +18,10 @@ export interface Forecast {
   hourly: {
     time: number;
     temperature: number;
+    apparentTemperature: number;
+    precipitation: number;
+    snowDepth: number;
+    weatherCode: WeatherCode;
   }[];
   currentWeather: {
     time: number;
@@ -47,6 +51,10 @@ interface RawResponse {
   hourly: {
     time: string[];
     temperature_2m: number[];
+    apparent_temperature: number[];
+    precipitation: number[];
+    snow_depth: number[];
+    weathercode: number[];
   };
   current_weather: {
     time: string;
@@ -113,7 +121,7 @@ export async function getForecast(props: ForecastProps = { name: 'Somewhere' }):
 function buildUrl({
   latitude = DEFAULT_LATITUDE,
   longitude = DEFAULT_LONGITUDE,
-  hourly = ['temperature_2m'],
+  hourly = ['temperature_2m', 'apparent_temperature', 'precipitation', 'snow_depth', 'weathercode'],
   temperatureUnit = 'C',
   windSpeedUnit = 'kmh',
   precipitationUnit = 'mm',
@@ -146,6 +154,10 @@ function convertJsonToData(json: RawResponse & { name: string }): Forecast {
     hourly: json.hourly.time.map((time, index) => ({
       time: new Date(time).valueOf(),
       temperature: +json.hourly.temperature_2m[index],
+      apparentTemperature: +json.hourly.apparent_temperature[index],
+      precipitation: +json.hourly.precipitation[index],
+      snowDepth: +json.hourly.snow_depth[index],
+      weatherCode: +json.hourly.weathercode[index],
     })),
     currentWeather: {
       time: new Date(json.current_weather.time).valueOf(),

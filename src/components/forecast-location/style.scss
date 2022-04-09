@@ -1,4 +1,13 @@
 .location {
   background-color: #9cf;
   padding: 48px;
+
+  &__temp-small {
+    font-size: 16px;
+    margin-left: 12px;
+  }
+
+  &__hour-slider {
+    width: 100%;
+  }
 }
