@@ -22,10 +22,10 @@
     background: transparent;
   }
 
-  &:focus {
+  &:focus-visible {
     color: var(--bgcolor);
     background: var(--bgcolor);
-    background: linear-gradient(180deg, #222 0%, #222 20%, transparent 100%);
+    background: linear-gradient(180deg, var(--color) 0%, var(--color) 20%, transparent 100%);
   }
 
   &__label {
@@ -88,26 +88,26 @@
   }
 
   &:hover &__char,
-  &:focus &__char,
+  &:focus-visible &__char,
   &:active &__char {
     width: 16px;
     height: 20px;
   }
   &:hover &__char--top,
-  &:focus &__char--top,
+  &:focus-visible &__char--top,
   &:active &__char--top {
     transform: translateY(40px) rotate(0);
   }
   &:hover &__char--bottom,
-  &:focus &__char--bottom,
+  &:focus-visible &__char--bottom,
   &:active &__char--bottom {
     transform: translateY(0) rotate(0);
   }
   &:hover &__char--left,
-  &:focus &__char--left,
+  &:focus-visible &__char--left,
   &:active &__char--left,
   &:hover &__char--right,
-  &:focus &__char--right,
+  &:focus-visible &__char--right,
   &:active &__char--right {
     transform: translateX(0) rotate(0);
   }
@@ -196,7 +196,7 @@
     }
   }
 
-  &--top:focus {
+  &--top:focus-visible {
     &::before,
     &::after {
       @include arrow-top(var(--bgcolor));
@@ -243,7 +243,7 @@
     }
   }
 
-  &--bottom:focus {
+  &--bottom:focus-visible {
     &::before,
     &::after {
       @include arrow-bottom(var(--bgcolor));
@@ -264,7 +264,7 @@
     }
   }
 
-  &--left:focus {
+  &--left:focus-visible {
     &::before,
     &::after {
       @include arrow-left(var(--bgcolor));
@@ -285,7 +285,7 @@
     }
   }
 
-  &--right:focus {
+  &--right:focus-visible {
     &::before,
     &::after {
       @include arrow-right(var(--bgcolor));
