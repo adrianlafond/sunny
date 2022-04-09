@@ -144,7 +144,7 @@ export const AddLocation: FunctionalComponent<AddLocationProps> = () => {
 
       <NavigationButton
         onClick={handleForecastsClick}
-        path="/add"
+        focusable={isAddPage()}
         position="bottom"
       >
         forecasts

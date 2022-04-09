@@ -1,5 +1,5 @@
 import { FunctionalComponent, h } from 'preact';
-import { useContext, useEffect, useRef } from 'preact/hooks';
+import { useContext, useEffect, useMemo, useRef } from 'preact/hooks';
 import { route } from 'preact-router';
 import classnames from 'classnames';
 import { IconLeft, IconRight } from '../icons';
@@ -41,6 +41,17 @@ export const Forecasts: FunctionalComponent = () => {
     return -1;
   };
 
+  const { leftForecast, rightForecast } = useMemo(() => {
+    const index = getForecastIndex();
+    const left = index > 0
+      ? forecastsContext.forecasts[index - 1]
+      : null;
+    const right = index < forecastsContext.forecasts.length - 1
+      ? forecastsContext.forecasts[index + 1]
+      : null;
+    return { leftForecast: left, rightForecast: right };
+  }, [navigation.forecastPath]);
+
   // On navigation path change, slides the relevant forecast into view.
   useEffect(() => {
     if (!carousel.current || navigation.isPanning) {
@@ -81,16 +92,14 @@ export const Forecasts: FunctionalComponent = () => {
   }, [navigation.isPanning, navigation.panningDelta]);
 
   const handleLeftClick = () => {
-    const index = getForecastIndex();
-    if (index > 0) {
-      route(encodeForecastPath(forecastsContext.forecasts[index - 1]));
+    if (leftForecast) {
+      route(encodeForecastPath(leftForecast));
     }
   }
 
   const handleRightClick = () => {
-    const index = getForecastIndex();
-    if (index < forecastsContext.forecasts.length - 1) {
-      route(encodeForecastPath(forecastsContext.forecasts[index + 1]));
+    if (rightForecast) {
+      route(encodeForecastPath(rightForecast));
     }
   };
 
@@ -100,10 +109,6 @@ export const Forecasts: FunctionalComponent = () => {
 
   const handleAddClick = () => {
     route(`/add`);
-  }
-
-  const handleDown = (event: MouseEvent) => {
-    event.stopImmediatePropagation();
   }
 
   const carouselClass = classnames(style.forecasts__carousel, {
@@ -128,34 +133,36 @@ export const Forecasts: FunctionalComponent = () => {
       )}
       <NavigationButton
         onClick={handleAddClick}
-        path="/forecasts"
+        focusable={isForecastPage()}
         position="top"
       >
         add forecast
       </NavigationButton>
+      {leftForecast ? (
+        <NavigationButton
+          onClick={handleLeftClick}
+          focusable={isForecastPage()}
+          position="left"
+        >
+          {leftForecast.name}
+        </NavigationButton>
+      ) : null}
+      {rightForecast ? (
+        <NavigationButton
+          onClick={handleRightClick}
+          focusable={isForecastPage()}
+          position="right"
+        >
+          {rightForecast.name}
+        </NavigationButton>
+      ) : null}
       <NavigationButton
         onClick={handlePrefsClick}
-        path="/forecasts"
+        focusable={isForecastPage()}
         position="bottom"
       >
         preferences
       </NavigationButton>
-      <button
-        class={classnames(style.forecasts__btn, style['forecasts__btn--left'])}
-        aria-label="previous"
-        onClick={handleLeftClick}
-        onMouseDown={handleDown}
-      >
-        <IconLeft />
-      </button>
-      <button
-        class={classnames(style.forecasts__btn, style['forecasts__btn--right'])}
-        aria-label="next"
-        onClick={handleRightClick}
-        onMouseDown={handleDown}
-      >
-        <IconRight />
-      </button>
     </div>
   );
 };

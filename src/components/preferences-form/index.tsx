@@ -5,18 +5,15 @@ import classnames from 'classnames';
 import page from '../shared/page.scss';
 import style from './style.scss';
 import { NavigationContext, Preferences, PreferencesContext } from '../../contexts';
+import { NavigationButton } from '../navigation-button';
 
 export const PreferencesForm: FunctionalComponent = () => {
-  const { forecastPath } = useContext(NavigationContext);
+  const { path, forecastPath } = useContext(NavigationContext);
   const { preferences, update } = useContext(PreferencesContext);
 
   const handleForecastsClick = () => {
     route(forecastPath);
   };
-
-  const handleDown = (event: MouseEvent) => {
-    event.stopImmediatePropagation();
-  }
 
   const handleTempUnitChange = (event: Event) => {
     const select = event.target as HTMLSelectElement;
@@ -28,21 +25,23 @@ export const PreferencesForm: FunctionalComponent = () => {
 
   return (
     <div class={classnames(page.page, style.preferences)}>
-      <h2>Preferences</h2>
+      <div class={page.page__content}>
+        <h2>Preferences</h2>
 
-      <label>Temperature unit</label>
-      <select onChange={handleTempUnitChange}>
-        <option value="C" selected={preferences.temperatureUnit === 'C'}>celcius</option>
-        <option value="F" selected={preferences.temperatureUnit === 'F'}>fahrenheit</option>
-      </select>
+        <label>Temperature unit</label>
+        <select onChange={handleTempUnitChange}>
+          <option value="C" selected={preferences.temperatureUnit === 'C'}>celcius</option>
+          <option value="F" selected={preferences.temperatureUnit === 'F'}>fahrenheit</option>
+        </select>
+      </div>
 
-      <button
-        class={style.preferences__navbtn}
+      <NavigationButton
         onClick={handleForecastsClick}
-        onMouseDown={handleDown}
+        focusable={path.startsWith('/preferences')}
+        position="top"
       >
         forecasts
-      </button>
+      </NavigationButton>
     </div>
   );
 };

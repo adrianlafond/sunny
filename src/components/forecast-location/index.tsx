@@ -57,15 +57,17 @@ export const ForecastLocation: FunctionalComponent<ForecastLocationProps> = ({
 
   return (
     <div class={classnames(page.page, style.location)}>
-      <h2>{forecast.name}</h2>
+      <div class={page.page__content}>
+        <h2>{forecast.name}</h2>
 
-      <p>{temp} °{forecast.temperatureUnit}</p>
-      <p>Dawn: {dawn}</p>
-      <p>Dusk: {dusk}</p>
+        <p>{temp} °{forecast.temperatureUnit}</p>
+        <p>Dawn: {dawn}</p>
+        <p>Dusk: {dusk}</p>
 
-      <p>timestamp: {timestamp}</p>
+        <p>timestamp: {timestamp}</p>
 
-      <button onClick={handleDelete}>Remove Forecast</button>
+        <button onClick={handleDelete}>Remove Forecast</button>
+      </div>
     </div>
   );
 };

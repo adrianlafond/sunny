@@ -7,14 +7,14 @@ import style from './style.scss';
 
 export interface NavigationButtonProps extends h.JSX.HTMLAttributes<HTMLButtonElement> {
   children: string;
-  path: string;
+  focusable?: boolean;
   position: 'top' | 'right' | 'bottom' | 'left';
 }
 
 export const NavigationButton: FunctionalComponent<NavigationButtonProps> = ({
   children,
   class: className,
-  path,
+  focusable = true,
   position,
   ...otherProps
 }) => {
@@ -26,10 +26,10 @@ export const NavigationButton: FunctionalComponent<NavigationButtonProps> = ({
   return zoomContext.zoom === 'in' ? (
     <button
       {...otherProps}
-      tabIndex={naviationContext.path.startsWith(path) ? 0 : -1}
+      tabIndex={focusable ? 0 : -1}
       class={classnames(className, style.navbtn, style[`navbtn--${position}`])}
     >
-      <div class={style.navbtn__label}>
+      <div class={classnames(style.navbtn__label, style[`navbtn__label--${position}`])}>
         {chars.map((c, i) => (
           <span
             class={classnames(style.navbtn__char, style[`navbtn__char--${position}`])}
