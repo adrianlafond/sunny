@@ -27,11 +27,12 @@
   }
 
   &:focus {
-    color: $focus-color;
-    background-color: rgba(#000, 0.1);
+    color: $color-dark;
+    background: #222;
+    background: linear-gradient(180deg, #222 0%, #222 20%, transparent 100%);
     @media (prefers-color-scheme: dark) {
-      color: $focus-color-dark;
-      background-color: rgba(#fff, 0.1);
+      color: $color;
+      background-color: #fff;
     }
   }
 
@@ -104,7 +105,7 @@
       animation-duration: 1s;
       animation-delay: 0s;
       animation-timing-function: ease-out;
-      animation-iteration-count: 999;
+      animation-iteration-count: infinite;
       @include arrow-bottom($color);
       @media (prefers-color-scheme: dark) {
         @include arrow-bottom($color-dark);
@@ -135,17 +136,17 @@
 
   &--bottom:focus {
     &::before {
-      @include arrow-bottom($focus-color);
+      @include arrow-bottom($color-dark);
     }
     &::after {
-      @include arrow-bottom($focus-color);
+      @include arrow-bottom($color-dark);
     }
     @media (prefers-color-scheme: dark) {
       &::before {
-        @include arrow-bottom($focus-color-dark);
+        @include arrow-bottom($color);
       }
       &::after {
-        @include arrow-bottom($focus-color-dark);
+        @include arrow-bottom($color);
       }
     }
   }

@@ -1,0 +1,44 @@
+@import '../../style/variables.scss';
+
+.locbtn {
+  &__button {
+    font-family: $font-family;
+    text-align: left;
+    margin: 0;
+    background: rgba(#fff, 0);
+    width: 100%;
+    border-width: 0 0 1px;
+    border-style: solid;
+    border-color: #888;
+    padding: 16px;
+    cursor: pointer;
+
+    &:hover {
+      background: rgba(#fff, 0.25);
+    }
+    &:active {
+      background: rgba(#fff, 0.5);
+    }
+    &:focus {
+      outline: none;
+      background: #222;
+      color: white;
+    }
+  }
+
+  &__name {
+    font-size: 24px;
+    margin-right: 16px;
+  }
+  &__location {
+    white-space: nowrap;
+  }
+  &__state {
+    font-size: 14px;
+    margin-right: 8px;
+  }
+  &__country {
+    font-size: 14px;
+    opacity: 0.6;
+  }
+}
