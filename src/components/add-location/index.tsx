@@ -2,6 +2,8 @@ import { FunctionalComponent, h } from 'preact';
 import { useContext, useEffect, useRef, useState } from 'preact/hooks';
 import { route } from 'preact-router';
 import classnames from 'classnames';
+import { RootState } from '../../store';
+import { useAppSelector, useAppDispatch } from '../../hooks';
 import { Forecast } from '../../services/forecast';
 import { ForecastContext, NavigationContext } from '../../contexts';
 import { NOT_FOUND } from '../../constants';
@@ -9,6 +11,7 @@ import { NavigationButton } from '../navigation-button';
 import { LocationButton } from '../location-button';
 import { getLocationCoords, Location, Locations } from '../../services/geocoding';
 import { createStubForecast } from '../../services';
+import { fetchLocations } from '../../features';
 
 import page from '../shared/page.scss';
 import typography from '../shared/typography.scss';
@@ -22,7 +25,8 @@ export const AddLocation: FunctionalComponent<AddLocationProps> = () => {
   const navigationContext = useContext(NavigationContext);
   const forecastsContext = useContext(ForecastContext);
 
-  const [locations, setLocations] = useState<Locations>([]);
+  const data = useAppSelector((state: RootState) => state.locations);
+  const dispatch = useAppDispatch();
 
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -74,12 +78,13 @@ export const AddLocation: FunctionalComponent<AddLocationProps> = () => {
 
   const handleLocationInput = async (event: Event) => {
     const input = event.target as HTMLInputElement;
-    const response = await getLocationCoords(input.value);
-    if (response.error) {
-      setLocations([]);
-    } else if (response.data) {
-      setLocations(response.data);
-    }
+    fetchLocations(input.value)(dispatch);
+    // const response = await getLocationCoords(input.value);
+    // if (response.error) {
+    //   setLocations([]);
+    // } else if (response.data) {
+    //   setLocations(response.data);
+    // }
   }
 
   function handleAddLocation(location: Location) {
@@ -127,7 +132,7 @@ export const AddLocation: FunctionalComponent<AddLocationProps> = () => {
         >
           <div class={style['addlocation__results-scroll']}>
             <ul class={style['addlocation__results-list']}>
-            {locations.map((location, index) => (
+            {data.locations.map((location, index) => (
               <LocationButton
                 key={`${location.latitude}--${location.longitude}`}
                 index={index}
@@ -137,6 +142,7 @@ export const AddLocation: FunctionalComponent<AddLocationProps> = () => {
               />
             ))}
             </ul>
+            {data.loading && <p>Loading...</p>}
           </div>
         </div>
       </div>

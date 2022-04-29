@@ -1,8 +1,9 @@
 import { configureStore } from '@reduxjs/toolkit';
-import { preferencesReducer } from '../features';
+import { locationsReducer, preferencesReducer } from '../features';
 
 export const store = configureStore({
   reducer: {
+    locations: locationsReducer,
     preferences: preferencesReducer,
   },
 });
