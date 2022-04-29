@@ -2,7 +2,10 @@ import { FunctionalComponent, h } from 'preact';
 import { useContext } from 'preact/hooks';
 import { route } from 'preact-router';
 import classnames from 'classnames';
-import { NavigationContext, Preferences, PreferencesContext } from '../../contexts';
+import { RootState } from '../../store';
+import { useAppSelector, useAppDispatch } from '../../hooks';
+import { Preferences, updateTemperatureUnit } from '../../features';
+import { NavigationContext } from '../../contexts';
 import { NavigationButton } from '../navigation-button';
 import page from '../shared/page.scss';
 import typography from '../shared/typography.scss';
@@ -10,7 +13,9 @@ import style from './style.scss';
 
 export const PreferencesForm: FunctionalComponent = () => {
   const { path, forecastPath } = useContext(NavigationContext);
-  const { preferences, update } = useContext(PreferencesContext);
+
+  const preferences = useAppSelector((state: RootState) => state.preferences);
+  const dispatch = useAppDispatch()
 
   // Prevents global spatial navigation panning.
   const onDown = (event: Event) => {
@@ -23,10 +28,8 @@ export const PreferencesForm: FunctionalComponent = () => {
 
   const handleTempUnitChange = (event: Event) => {
     const select = event.target as HTMLSelectElement;
-    update({
-      ...preferences,
-      temperatureUnit: select.value as Preferences['temperatureUnit'],
-    })
+    const unit = select.value as Preferences['temperatureUnit'];
+    dispatch(updateTemperatureUnit(unit));
   }
 
   return (

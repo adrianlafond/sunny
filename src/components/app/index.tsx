@@ -1,14 +1,13 @@
 import { FunctionalComponent, h } from 'preact';
 import { Router, RouterOnChangeArgs } from 'preact-router';
 import { useEffect, useReducer, useRef, useState } from 'preact/hooks';
+import { Provider } from 'react-redux';
 import classnames from 'classnames';
+import { store } from '../../store'
 import {
   NavigationContext,
   NavigationContextProps,
   defaultNavigationContext,
-  Preferences,
-  PreferencesContext,
-  PreferencesContextProps,
   defaultPreferences,
   ZoomContext,
   ZoomContextProps,
@@ -62,11 +61,6 @@ const App: FunctionalComponent = () => {
   const dragStart = useRef({ x: 0, y: 0 });
 
   const [navigation, dispatch] = useReducer(navigationReducer, defaultNavigationContext);
-  const [preferencesContext, setPreferencesContext] = useState<PreferencesContextProps>({
-    preferences: restorePreferences() || defaultPreferences,
-    update: updatePreferences,
-  });
-
   const [zoomContext, setZoomContext] = useState<ZoomContextProps>(defaultZoomContext);
 
   const isGrabbing = useRef(false);
@@ -149,22 +143,14 @@ const App: FunctionalComponent = () => {
     setZoomContext({ zoom: zoomContext.zoom === 'in' ? 'out' : 'in' });
   }
 
-  function updatePreferences(preferences: Preferences) {
-    setPreferencesContext({
-      ...preferencesContext,
-      preferences,
-    });
-    storePreferences(preferences);
-  }
-
   const appClass = classnames(style.app, {
     [style['app--panning']]: isGrabbing.current,
     [style['app--zoom-out']]: zoomContext.zoom === 'out',
   });
 
   return (
+    <Provider store={store}>
     <NavigationContext.Provider value={navigation}>
-    <PreferencesContext.Provider value={preferencesContext}>
     <ZoomContext.Provider value={zoomContext}>
       <main class={appClass} onDblClick={handleDoubleClick}>
         <Router onChange={handleRouterChange}>
@@ -172,8 +158,8 @@ const App: FunctionalComponent = () => {
         </Router>
       </main>
     </ZoomContext.Provider>
-    </PreferencesContext.Provider>
     </NavigationContext.Provider>
+    </Provider>
   );
 };
 

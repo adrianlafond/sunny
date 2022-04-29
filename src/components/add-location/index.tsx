@@ -76,7 +76,6 @@ export const AddLocation: FunctionalComponent<AddLocationProps> = () => {
     const input = event.target as HTMLInputElement;
     const response = await getLocationCoords(input.value);
     if (response.error) {
-      console.log(response.error);
       setLocations([]);
     } else if (response.data) {
       setLocations(response.data);

@@ -6,7 +6,7 @@ import { Forecast, getForecast } from '../../services/forecast';
 import page from '../shared/page.scss';
 import typography from '../shared/typography.scss';
 import style from './style.scss';
-import { PreferencesContext } from '../../contexts';
+import { useAppSelector } from '../../hooks';
 import { WeatherCode } from '../../services';
 
 interface ForecastLocationProps {
@@ -20,7 +20,7 @@ export const ForecastLocation: FunctionalComponent<ForecastLocationProps> = ({
   onForecastUpdate,
   onForecastDelete,
 }) => {
-  const preferencesContext = useContext(PreferencesContext);
+  const preferences = useAppSelector(state => state.preferences);
 
   const [hourIndex, setHourIndex] = useState({
     value: 0,
@@ -33,7 +33,7 @@ export const ForecastLocation: FunctionalComponent<ForecastLocationProps> = ({
       name,
       latitude,
       longitude,
-      temperatureUnit: preferencesContext.preferences.temperatureUnit,
+      temperatureUnit: preferences.temperatureUnit,
     }).then(response => {
       if (response.error) {
         //
@@ -43,7 +43,7 @@ export const ForecastLocation: FunctionalComponent<ForecastLocationProps> = ({
     });
   }
 
-  useEffect(updateForecast, [preferencesContext.preferences]);
+  useEffect(updateForecast, [preferences.temperatureUnit]);
 
   useEffect(() => {
     if (Date.now() - forecast.timestamp.valueOf() >= FORECAST_CACHE_TIME) {
@@ -59,17 +59,19 @@ export const ForecastLocation: FunctionalComponent<ForecastLocationProps> = ({
 
   useEffect(() => {
     const now = hourIndex.time || Date.now();
-    let index = 0;
+    let index = -1;
     forecast.hourly.some((hour, i) => {
       if (hour.time > now) {
         return true;
       }
-      index  = i;
+      index = i;
     });
-    setHourIndex({
-      value: index,
-      time: forecast.hourly[index].time,
-    });
+    if (index !== -1) {
+      setHourIndex({
+        value: index,
+        time: forecast.hourly[index].time,
+      });
+    }
   }, [forecast.timestamp]);
 
   function handleDown(event: Event) {
@@ -95,8 +97,9 @@ export const ForecastLocation: FunctionalComponent<ForecastLocationProps> = ({
   const hour = forecast.hourly[hourIndex.value];
   const code = 0; // hour.weatherCode
 
+  // style[`location--code-${code}`]
   return (
-    <div class={classnames(page.page, style.location, style[`location--code-${code}`])}>
+    <div class={classnames(page.page, style.location)}>
       <div class={page.page__content}>
         <h2 class={typography.h3}>{forecast.name}</h2>
 
