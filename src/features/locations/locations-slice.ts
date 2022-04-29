@@ -37,7 +37,13 @@ export const locationsSlice = createSlice({
 
 const { locationsLoading, locationsReceived } = locationsSlice.actions;
 
-export const fetchLocations = (input: string) => async (dispatch: Dispatch) => {
+// export const fetchLocations = (input: string) => async (dispatch: Dispatch) => {
+//   dispatch(locationsLoading());
+//   const response = await getLocationCoords(input);
+//   dispatch(locationsReceived(response));
+// };
+
+export const fetchLocations = async (dispatch: Dispatch, input: string) => {
   dispatch(locationsLoading());
   const response = await getLocationCoords(input);
   dispatch(locationsReceived(response));

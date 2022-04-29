@@ -78,13 +78,7 @@ export const AddLocation: FunctionalComponent<AddLocationProps> = () => {
 
   const handleLocationInput = async (event: Event) => {
     const input = event.target as HTMLInputElement;
-    fetchLocations(input.value)(dispatch);
-    // const response = await getLocationCoords(input.value);
-    // if (response.error) {
-    //   setLocations([]);
-    // } else if (response.data) {
-    //   setLocations(response.data);
-    // }
+    fetchLocations(dispatch, input.value);
   }
 
   function handleAddLocation(location: Location) {
