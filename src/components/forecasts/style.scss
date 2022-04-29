@@ -2,6 +2,14 @@
   width: 100vw;
   height: 100%;
   position: relative;
+  background: black;
+  // background: linear-gradient(
+  //   0deg,
+  //   var(--bgcolor) 0%,
+  //   transparent 20%,
+  //   transparent 80%,
+  //   var(--bgcolor) 100%
+  // );
 
   &__carousel {
     min-height: 100%;

@@ -92,16 +92,11 @@ export const ForecastLocation: FunctionalComponent<ForecastLocationProps> = ({
     onForecastDelete(forecast);
   }
 
-  function getTemperature() {
-    return forecast.hourly[hourIndex.value]
-      ? `${forecast.hourly[hourIndex.value].temperature} °${forecast.temperatureUnit}`
-      : 'n/a';
-  }
-
   const hour = forecast.hourly[hourIndex.value];
+  const code = 0; // hour.weatherCode
 
   return (
-    <div class={classnames(page.page, style.location)}>
+    <div class={classnames(page.page, style.location, style[`location--code-${code}`])}>
       <div class={page.page__content}>
         <h2 class={typography.h3}>{forecast.name}</h2>
 
@@ -120,7 +115,7 @@ export const ForecastLocation: FunctionalComponent<ForecastLocationProps> = ({
         <input
           type="range"
           min={0}
-          max={forecast.hourly.length}
+          max={forecast.hourly.length - 1}
           class={style['location__hour-slider']}
           onMouseDown={handleDown}
           onInput={handleHourChange}

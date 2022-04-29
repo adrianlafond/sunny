@@ -1,5 +1,6 @@
 .preferences {
-  background-color: #ccc;
+  color: var(--color);
+  background-color: var(--bgcolor);
 
   &__navbtn {
     position: absolute;
