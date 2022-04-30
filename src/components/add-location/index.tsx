@@ -5,25 +5,21 @@ import classnames from 'classnames';
 import { RootState } from '../../store';
 import { useAppSelector, useAppDispatch } from '../../hooks';
 import { Forecast } from '../../services/forecast';
-import { ForecastContext, NavigationContext } from '../../contexts';
+import { NavigationContext } from '../../contexts';
 import { NOT_FOUND } from '../../constants';
 import { NavigationButton } from '../navigation-button';
 import { LocationButton } from '../location-button';
-import { getLocationCoords, Location, Locations } from '../../services/geocoding';
+import { Location } from '../../services/geocoding';
 import { createStubForecast } from '../../services';
-import { fetchLocations } from '../../features';
+import { addForecast, fetchLocations } from '../../features';
 
 import page from '../shared/page.scss';
 import typography from '../shared/typography.scss';
 import style from './style.scss';
 
-interface AddLocationProps {
-  onAddForecast: (forecast: Forecast) => void;
-}
 
-export const AddLocation: FunctionalComponent<AddLocationProps> = () => {
+export const AddLocation: FunctionalComponent = () => {
   const navigationContext = useContext(NavigationContext);
-  const forecastsContext = useContext(ForecastContext);
 
   const data = useAppSelector((state: RootState) => state.locations);
   const dispatch = useAppDispatch();
@@ -83,7 +79,8 @@ export const AddLocation: FunctionalComponent<AddLocationProps> = () => {
 
   function handleAddLocation(location: Location) {
     const { name, latitude, longitude } = location;
-    forecastsContext.addForecast(createStubForecast(name, latitude, longitude));
+    const forecast = createStubForecast(name, latitude, longitude);
+    addForecast(dispatch, forecast);
   }
 
   function overridePointerDown(event: Event) {

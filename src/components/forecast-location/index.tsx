@@ -2,32 +2,30 @@ import { FunctionalComponent, h } from 'preact';
 import { useContext, useEffect, useMemo, useRef, useState } from 'preact/hooks';
 import classnames from 'classnames';
 import { FORECAST_CACHE_TIME } from '../../constants';
-import { Forecast, getForecast } from '../../services/forecast';
+import { getForecast } from '../../services/forecast';
 import page from '../shared/page.scss';
 import typography from '../shared/typography.scss';
 import style from './style.scss';
-import { useAppSelector } from '../../hooks';
+import { useAppDispatch, useAppSelector } from '../../hooks';
 import { WeatherCode } from '../../services';
+import { ForecastState, updateForecast, removeForecast } from '../../features';
 
 interface ForecastLocationProps {
-  forecast: Forecast;
-  onForecastUpdate: (forecast: Forecast) => void;
-  onForecastDelete: (forecast: Forecast) => void;
+  forecast: ForecastState;
 }
 
 export const ForecastLocation: FunctionalComponent<ForecastLocationProps> = ({
   forecast,
-  onForecastUpdate,
-  onForecastDelete,
 }) => {
   const preferences = useAppSelector(state => state.preferences);
+  const dispatch = useAppDispatch();
 
   const [hourIndex, setHourIndex] = useState({
     value: 0,
     time: 0,
   });
 
-  function updateForecast() {
+  function update() {
     const { name, latitude, longitude } = forecast;
     getForecast({
       name,
@@ -38,16 +36,16 @@ export const ForecastLocation: FunctionalComponent<ForecastLocationProps> = ({
       if (response.error) {
         //
       } else if (response.data) {
-        onForecastUpdate(response.data);
+        updateForecast(dispatch, response.data);
       }
     });
   }
 
-  useEffect(updateForecast, [preferences.temperatureUnit]);
+  useEffect(update, [preferences.temperatureUnit]);
 
   useEffect(() => {
     if (Date.now() - forecast.timestamp.valueOf() >= FORECAST_CACHE_TIME) {
-      updateForecast();
+      update();
     }
   }, [forecast.timestamp]);
 
@@ -91,7 +89,7 @@ export const ForecastLocation: FunctionalComponent<ForecastLocationProps> = ({
   }
 
   function handleDelete() {
-    onForecastDelete(forecast);
+    removeForecast(dispatch, forecast);
   }
 
   const hour = forecast.hourly[hourIndex.value];

@@ -8,12 +8,10 @@ import {
   NavigationContext,
   NavigationContextProps,
   defaultNavigationContext,
-  defaultPreferences,
   ZoomContext,
   ZoomContextProps,
   defaultZoomContext,
 } from '../../contexts';
-import { restorePreferences, storePreferences } from '../../services';
 import { Content } from '../content';
 import style from './style.scss';
 

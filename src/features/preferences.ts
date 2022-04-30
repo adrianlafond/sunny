@@ -1,14 +1,12 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { storePreferences } from '../../services';
+import { restorePreferences, storePreferences } from '../services';
 
 export interface Preferences {
   temperatureUnit: 'C' | 'F'
 }
 
 const name = 'preferences';
-const initialState = {
-  temperatureUnit: 'C',
-} as Preferences;
+const initialState = restorePreferences() as Preferences;
 
 export const preferencesSlice = createSlice({
   name,

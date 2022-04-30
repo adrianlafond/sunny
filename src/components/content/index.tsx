@@ -1,72 +1,17 @@
 import { FunctionalComponent, h } from 'preact';
-import { useCallback, useContext, useEffect, useRef, useState } from 'preact/hooks';
+import { useContext, useEffect, useRef, useState } from 'preact/hooks';
 import { route } from 'preact-router';
 import classnames from 'classnames';
 import { PreferencesForm } from '../preferences-form';
 import { Forecasts } from '../forecasts';
-import { ForecastContext, ForecastContextProps, NavigationContext, ThemeContext } from '../../contexts';
+import { NavigationContext, ThemeContext } from '../../contexts';
 import { NOT_FOUND, PANNING_ROUTER_CHANGE } from '../../constants';
 import { AddLocation } from '../add-location';
-import {
-  encodeForecastPath,
-  Forecast,
-  getDefaultForecast,
-  restoreForecasts,
-  storeForecasts,
-} from '../../services';
 import style from './style.scss';
 
 export const Content: FunctionalComponent = () => {
   const theme = useContext(ThemeContext);
   const navigation = useContext(NavigationContext);
-
-  function getForecastIndex(forecast: Forecast) {
-    return forecastsContext.forecasts.findIndex(f => (
-      f.latitude === forecast.latitude && f.longitude === forecast.longitude
-    ));
-  }
-
-  // Adds or updates the forecast to the forecasts array.
-  const updateForecast = useCallback((forecast: Forecast) => {
-    const index = getForecastIndex(forecast);
-    const forecasts = forecastsContext.forecasts.slice();
-    if (index === -1) {
-      forecasts.push(forecast);
-    } else {
-      forecasts[index] = forecast;
-    }
-    storeForecasts(forecasts);
-    setForecastsContext({
-      ...forecastsContext,
-      forecasts,
-    });
-  }, []);
-
-  const addForecast = useCallback((forecast: Forecast) => {
-    updateForecast(forecast);
-    route(encodeForecastPath(forecast));
-  }, []);
-
-  const removeForecast = useCallback((forecast: Forecast) => {
-    const index = getForecastIndex(forecast);
-    if (index !== -1) {
-      const forecasts = forecastsContext.forecasts.slice();
-      forecasts.splice(index, 1);
-      storeForecasts(forecasts);
-      setForecastsContext({
-        ...forecastsContext,
-        forecasts,
-      });
-      route('/');
-    }
-  }, []);
-
-  const [forecastsContext, setForecastsContext] = useState<ForecastContextProps>({
-    updateForecast,
-    addForecast,
-    removeForecast,
-    forecasts: restoreForecasts() || [getDefaultForecast()],
-  });
 
   const scroll = useRef<HTMLDivElement>(null);
 
@@ -125,15 +70,13 @@ export const Content: FunctionalComponent = () => {
 
   return (
     <ThemeContext.Provider value={theme}>
-      <ForecastContext.Provider value={forecastsContext}>
-        <div class={style.content}>
-          <div class={scrollClass} ref={scroll}>
-            <AddLocation onAddForecast={addForecast} />
-            <Forecasts />
-            <PreferencesForm />
-          </div>
+      <div class={style.content}>
+        <div class={scrollClass} ref={scroll}>
+          <AddLocation />
+          <Forecasts />
+          <PreferencesForm />
         </div>
-      </ForecastContext.Provider>
+      </div>
     </ThemeContext.Provider>
   );
 };

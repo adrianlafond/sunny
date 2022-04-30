@@ -15,7 +15,7 @@ export const PreferencesForm: FunctionalComponent = () => {
   const { path, forecastPath } = useContext(NavigationContext);
 
   const preferences = useAppSelector((state: RootState) => state.preferences);
-  const dispatch = useAppDispatch()
+  const dispatch = useAppDispatch();
 
   // Prevents global spatial navigation panning.
   const onDown = (event: Event) => {

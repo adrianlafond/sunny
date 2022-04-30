@@ -1,2 +1,3 @@
-export * from './locations/locations-slice';
-export * from './preferences/preferences-slice';
+export * from './forecasts';
+export * from './locations';
+export * from './preferences';

@@ -1,19 +1,24 @@
-import { Forecast } from './forecast';
-import { Preferences } from '../contexts';
+import { ForecastState, Preferences } from '../features';
+import { getDefaultForecast } from './default-forecast';
 
 export function restoreForecasts() {
   if ('undefined' !== typeof window) {
     const storage = window.localStorage.getItem('forecasts');
     if (storage) {
-      return JSON.parse(storage) as Forecast[];
+      return JSON.parse(storage) as ForecastState[];
     }
   }
-  return null;
+  return [getDefaultForecast()];
 }
 
-export function storeForecasts(forecasts: Forecast[]) {
+export function storeForecasts(forecasts: ForecastState[]) {
   if ('undefined' !== typeof window) {
-    window.localStorage.setItem('forecasts', JSON.stringify(forecasts));
+    const store = forecasts.map(f => ({
+      ...f,
+      error: null,
+      loading: false,
+    }));
+    window.localStorage.setItem('forecasts', JSON.stringify(store));
   }
 }
 

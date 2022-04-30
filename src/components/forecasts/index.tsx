@@ -2,18 +2,23 @@ import { FunctionalComponent, h } from 'preact';
 import { useContext, useEffect, useMemo, useRef } from 'preact/hooks';
 import { route } from 'preact-router';
 import classnames from 'classnames';
-import { IconLeft, IconRight } from '../icons';
+import { RootState } from '../../store';
+import { useAppSelector, useAppDispatch } from '../../hooks';
 import { ForecastLocation } from '../forecast-location';
 import { NoForecasts } from '../no-forecasts';
 import { NavigationButton } from '../navigation-button';
-import { ForecastContext, NavigationContext } from '../../contexts';
-import { decodeForecastPath, encodeForecastPath } from '../../services';
+import { NavigationContext } from '../../contexts';
+import { decodeForecastPath, encodeForecastPath, storeForecasts } from '../../services';
 import { NOT_FOUND, PANNING_ROUTER_CHANGE } from '../../constants';
 
 import style from './style.scss';
 
 export const Forecasts: FunctionalComponent = () => {
-  const forecastsContext = useContext(ForecastContext);
+  const forecasts = useAppSelector((state: RootState) => state.forecasts);
+
+  useEffect(() => {
+    storeForecasts(forecasts);
+  }, [forecasts]);
 
   // Element upon which translate is applied during navigation and dragging:
   const carousel = useRef<HTMLDivElement>(null);
@@ -35,7 +40,7 @@ export const Forecasts: FunctionalComponent = () => {
       const coords = decodeForecastPath(navigation[key]);
       if (coords) {
         const { latitude, longitude } = coords;
-        return forecastsContext.forecasts.findIndex(f => f.latitude === latitude && f.longitude === longitude);
+        return forecasts.findIndex(f => f.latitude === latitude && f.longitude === longitude);
       }
     }
     return -1;
@@ -44,10 +49,10 @@ export const Forecasts: FunctionalComponent = () => {
   const { leftForecast, rightForecast } = useMemo(() => {
     const index = getForecastIndex();
     const left = index > 0
-      ? forecastsContext.forecasts[index - 1]
+      ? forecasts[index - 1]
       : null;
-    const right = index < forecastsContext.forecasts.length - 1
-      ? forecastsContext.forecasts[index + 1]
+    const right = index < forecasts.length - 1
+      ? forecasts[index + 1]
       : null;
     return { leftForecast: left, rightForecast: right };
   }, [navigation.forecastPath]);
@@ -76,7 +81,6 @@ export const Forecasts: FunctionalComponent = () => {
           let newPath = navigation.prePanningPath;
           const goLeft = navigation.panningDelta.x >= window.innerWidth * PANNING_ROUTER_CHANGE;
           const goRight = navigation.panningDelta.x <= window.innerWidth * -PANNING_ROUTER_CHANGE;
-          const { forecasts } = forecastsContext;
           if (goLeft && index > 0) {
             newPath = encodeForecastPath(forecasts[index - 1]);
           } else if (goRight && index < forecasts.length - 1) {
@@ -117,14 +121,12 @@ export const Forecasts: FunctionalComponent = () => {
 
   return (
     <div class={style.forecasts}>
-      {forecastsContext.forecasts.length ? (
+      {forecasts.length ? (
         <div class={carouselClass} ref={carousel}>
-          {forecastsContext.forecasts.map(forecast => (
+          {forecasts.map(forecast => (
             <ForecastLocation
               key={`${forecast.latitude},${forecast.longitude}`}
               forecast={forecast}
-              onForecastUpdate={forecastsContext.updateForecast}
-              onForecastDelete={forecastsContext.removeForecast}
             />
           ))}
         </div>
