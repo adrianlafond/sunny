@@ -1,10 +1,11 @@
 import { FunctionalComponent, h } from 'preact';
-import { useContext } from 'preact/hooks';
+import { useContext, useEffect } from 'preact/hooks';
 import { route } from 'preact-router';
 import classnames from 'classnames';
 import { RootState } from '../../store';
 import { useAppSelector, useAppDispatch } from '../../hooks';
 import { Preferences, updateTemperatureUnit } from '../../features';
+import { storePreferences } from '../../services';
 import { NavigationContext } from '../../contexts';
 import { NavigationButton } from '../navigation-button';
 import page from '../shared/page.scss';
@@ -16,6 +17,10 @@ export const PreferencesForm: FunctionalComponent = () => {
 
   const preferences = useAppSelector((state: RootState) => state.preferences);
   const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    storePreferences(preferences);
+  }, [preferences]);
 
   // Prevents global spatial navigation panning.
   const onDown = (event: Event) => {

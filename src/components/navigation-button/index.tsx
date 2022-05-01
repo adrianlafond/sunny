@@ -1,7 +1,9 @@
 import { FunctionalComponent, h } from 'preact';
 import { useContext } from 'preact/hooks';
 import classnames from 'classnames';
-import { NavigationContext, ZoomContext } from '../../contexts';
+import { useAppSelector } from '../../hooks';
+import { RootState } from '../../store';
+import { NavigationContext } from '../../contexts';
 
 import style from './style.scss';
 
@@ -19,11 +21,11 @@ export const NavigationButton: FunctionalComponent<NavigationButtonProps> = ({
   ...otherProps
 }) => {
   const naviationContext = useContext(NavigationContext);
-  const zoomContext = useContext(ZoomContext);
+  const zoom = useAppSelector((state: RootState) => state.zoom);
 
   const chars = children.split('');
 
-  return zoomContext.zoom === 'in' ? (
+  return zoom.status === 'in' ? (
     <button
       {...otherProps}
       tabIndex={focusable ? 0 : -1}

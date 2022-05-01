@@ -3,6 +3,7 @@ import {
   forecastsReducer,
   locationsReducer,
   preferencesReducer,
+  zoomReducer,
 } from '../features';
 
 export const store = configureStore({
@@ -10,6 +11,7 @@ export const store = configureStore({
     forecasts: forecastsReducer,
     locations: locationsReducer,
     preferences: preferencesReducer,
+    zoom: zoomReducer,
   },
 });
 

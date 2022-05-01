@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { restorePreferences, storePreferences } from '../services';
+import { restorePreferences } from '../services';
 
 export interface Preferences {
   temperatureUnit: 'C' | 'F'
@@ -14,7 +14,6 @@ export const preferencesSlice = createSlice({
   reducers: {
     updateTemperatureUnit: (state: Preferences, action: PayloadAction<Preferences['temperatureUnit']>) => {
       state.temperatureUnit = action.payload;
-      storePreferences(state);
     }
   }
 });
