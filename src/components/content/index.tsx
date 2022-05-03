@@ -2,16 +2,19 @@ import { FunctionalComponent, h } from 'preact';
 import { useContext, useEffect, useRef, useState } from 'preact/hooks';
 import { route } from 'preact-router';
 import classnames from 'classnames';
+import { useAppSelector } from '../../hooks';
+import { RootState } from '../../store';
 import { PreferencesForm } from '../preferences-form';
 import { Forecasts } from '../forecasts';
-import { NavigationContext, ThemeContext } from '../../contexts';
+import { ThemeContext } from '../../contexts';
 import { NOT_FOUND, PANNING_ROUTER_CHANGE } from '../../constants';
 import { AddLocation } from '../add-location';
 import style from './style.scss';
 
+
 export const Content: FunctionalComponent = () => {
   const theme = useContext(ThemeContext);
-  const navigation = useContext(NavigationContext);
+  const navigation = useAppSelector((state: RootState) => state.navigation);
 
   const scroll = useRef<HTMLDivElement>(null);
 

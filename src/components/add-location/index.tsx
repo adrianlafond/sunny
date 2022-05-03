@@ -1,11 +1,9 @@
 import { FunctionalComponent, h } from 'preact';
-import { useContext, useEffect, useRef, useState } from 'preact/hooks';
+import { useEffect, useRef } from 'preact/hooks';
 import { route } from 'preact-router';
 import classnames from 'classnames';
 import { RootState } from '../../store';
 import { useAppSelector, useAppDispatch } from '../../hooks';
-import { Forecast } from '../../services/forecast';
-import { NavigationContext } from '../../contexts';
 import { NOT_FOUND } from '../../constants';
 import { NavigationButton } from '../navigation-button';
 import { LocationButton } from '../location-button';
@@ -19,16 +17,13 @@ import style from './style.scss';
 
 
 export const AddLocation: FunctionalComponent = () => {
-  const navigationContext = useContext(NavigationContext);
-
-  const data = useAppSelector((state: RootState) => state.locations);
+  const { data, navigation } = useAppSelector((state: RootState) => ({
+    data: state.locations,
+    navigation: state.navigation,
+  }));
   const dispatch = useAppDispatch();
 
   const inputRef = useRef<HTMLInputElement>(null);
-
-  function isAddPage() {
-    return navigationContext.path.startsWith('/add');
-  }
 
   function handleKeyDown(event: KeyboardEvent) {
     const down = event.key === 'ArrowDown';
@@ -56,25 +51,25 @@ export const AddLocation: FunctionalComponent = () => {
   }
 
   useEffect(() => {
-    if (inputRef.current && isAddPage()) {
-      inputRef.current.focus();
-    }
-  }, [navigationContext.path]);
-
-  useEffect(() => {
-    if (isAddPage()) {
+    if (navigation.isAddLocation) {
+      if (inputRef.current) {
+        inputRef.current.focus();
+      }
       window.addEventListener('keydown', handleKeyDown);
     }
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [navigationContext.path]);
+  }, [navigation.path]);
 
   const handleForecastsClick = () => {
-    route(navigationContext.forecastPath);
+    route(navigation.forecastPath);
   };
 
   const handleLocationInput = async (event: Event) => {
     const input = event.target as HTMLInputElement;
     fetchLocations(dispatch, input.value);
+    // Uncaught (in promise) TypeError: u is null
+    // const { data, error, isLoading } = locationsApi.endpoints.getLocationCoords.useQuery(input.value);
+    // console.log(isLoading, error, data);
   }
 
   function handleAddLocation(location: Location) {
@@ -92,7 +87,7 @@ export const AddLocation: FunctionalComponent = () => {
     <div class={classnames(page.page, style.addlocation)}>
       <div class={classnames(page.page__content, style.addlocation__content)}>
         <div>
-          {navigationContext.path === NOT_FOUND ? (
+          {navigation.path === NOT_FOUND ? (
             <h3 class={classnames(typography.h3, style.addlocation__break)}><em>
               Whoops! You requested a page that does not exist.
             </em></h3>
@@ -107,7 +102,7 @@ export const AddLocation: FunctionalComponent = () => {
               name="location"
               placeholder="place name or postal code"
               onInput={handleLocationInput}
-              tabIndex={isAddPage() ? 0 : -1}
+              tabIndex={navigation.isAddLocation ? 0 : -1}
               spellCheck={false}
               autoComplete="off"
               data-lpignore="true"
@@ -129,7 +124,7 @@ export const AddLocation: FunctionalComponent = () => {
                 index={index}
                 location={location}
                 onClick={handleAddLocation}
-                tabIndex={isAddPage() ? 0 : -1}
+                tabIndex={navigation.isAddLocation ? 0 : -1}
               />
             ))}
             </ul>
@@ -140,7 +135,7 @@ export const AddLocation: FunctionalComponent = () => {
 
       <NavigationButton
         onClick={handleForecastsClick}
-        focusable={isAddPage()}
+        focusable={navigation.isAddLocation}
         position="bottom"
       >
         forecasts

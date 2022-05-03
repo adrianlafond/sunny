@@ -131,6 +131,10 @@ export const ForecastLocation: FunctionalComponent<ForecastLocationProps> = ({
         <p>Fetched from API: {timestamp}</p>
 
         <p>
+          <button onClick={update}>Fetch Forecast</button>
+        </p>
+
+        <p>
           <button onClick={logData}>Log Forecast</button>
         </p>
 

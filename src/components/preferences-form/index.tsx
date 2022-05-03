@@ -1,21 +1,26 @@
 import { FunctionalComponent, h } from 'preact';
-import { useContext, useEffect } from 'preact/hooks';
+import { useEffect } from 'preact/hooks';
 import { route } from 'preact-router';
 import classnames from 'classnames';
 import { RootState } from '../../store';
 import { useAppSelector, useAppDispatch } from '../../hooks';
 import { Preferences, updateTemperatureUnit } from '../../features';
 import { storePreferences } from '../../services';
-import { NavigationContext } from '../../contexts';
 import { NavigationButton } from '../navigation-button';
 import page from '../shared/page.scss';
 import typography from '../shared/typography.scss';
 import style from './style.scss';
 
 export const PreferencesForm: FunctionalComponent = () => {
-  const { path, forecastPath } = useContext(NavigationContext);
-
-  const preferences = useAppSelector((state: RootState) => state.preferences);
+  const {
+    path,
+    forecastPath,
+    preferences,
+  } = useAppSelector((state: RootState) => ({
+    path: state.navigation.path,
+    forecastPath: state.navigation.forecastPath,
+    preferences: state.preferences,
+  }));
   const dispatch = useAppDispatch();
 
   useEffect(() => {

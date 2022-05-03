@@ -1,20 +1,22 @@
 import { FunctionalComponent, h } from 'preact';
-import { useContext, useEffect, useMemo, useRef } from 'preact/hooks';
+import { useEffect, useMemo, useRef } from 'preact/hooks';
 import { route } from 'preact-router';
 import classnames from 'classnames';
 import { RootState } from '../../store';
-import { useAppSelector, useAppDispatch } from '../../hooks';
+import { useAppSelector } from '../../hooks';
 import { ForecastLocation } from '../forecast-location';
 import { NoForecasts } from '../no-forecasts';
 import { NavigationButton } from '../navigation-button';
-import { NavigationContext } from '../../contexts';
 import { decodeForecastPath, encodeForecastPath, storeForecasts } from '../../services';
 import { NOT_FOUND, PANNING_ROUTER_CHANGE } from '../../constants';
 
 import style from './style.scss';
 
 export const Forecasts: FunctionalComponent = () => {
-  const forecasts = useAppSelector((state: RootState) => state.forecasts);
+  const { forecasts, navigation } = useAppSelector((state: RootState) => ({
+    forecasts: state.forecasts,
+    navigation: state.navigation,
+  }));
 
   useEffect(() => {
     storeForecasts(forecasts);
@@ -25,8 +27,6 @@ export const Forecasts: FunctionalComponent = () => {
 
   // Tracks the offset of current position while dragging:
   const translateX = useRef(0);
-
-  const navigation = useContext(NavigationContext);
 
   function isForecastPage(key: 'forecastPath' | 'prePanningPath' = 'forecastPath') {
     return navigation[key] === '/' || navigation[key].startsWith('/forecast');

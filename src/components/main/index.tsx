@@ -4,59 +4,17 @@ import { useEffect, useReducer, useRef, useState } from 'preact/hooks';
 import classnames from 'classnames';
 import { RootState } from '../../store'
 import { useAppDispatch, useAppSelector } from '../../hooks';
-import { updateZoomStatus } from '../../features';
 import {
-  NavigationContext,
-  NavigationContextProps,
-  defaultNavigationContext,
-} from '../../contexts';
+  updatePath,
+  updatePanning,
+  updatePanningDelta,
+  updateZoomStatus
+} from '../../features';
 import { Content } from '../content';
 import style from './style.scss';
 
-type NavigationActionType = {
-  type: 'path-change';
-  data: RouterOnChangeArgs;
-} | {
-  type: 'panning-delta';
-  data: NavigationContextProps['panningDelta'];
-} | {
-  type: 'panning-stop';
-  data: null;
-}
-
-function navigationReducer(
-  state: NavigationContextProps,
-  action: NavigationActionType): NavigationContextProps {
-  const { type, data } = action;
-  switch (type) {
-    case 'path-change':
-      return {
-        ...state,
-        path: data.url,
-        forecastPath: data.url === '/' || data.url.startsWith('/forecast')
-          ? data.url
-          : state.forecastPath,
-      };
-    case 'panning-delta':
-      return {
-        ...state,
-        prePanningPath: state.isPanning ? state.prePanningPath : state.path,
-        isPanning: true,
-        panningDelta: data,
-        panningRouteChangeAxis: Math.abs(data.x) >= Math.abs(data.y) ? 'x' : 'y',
-      };
-    case 'panning-stop':
-      return {
-        ...state,
-        isPanning: false,
-      };
-  }
-}
-
 export const Main: FunctionalComponent = () => {
   const dragStart = useRef({ x: 0, y: 0 });
-
-  const [navigation, dispatchNavigation] = useReducer(navigationReducer, defaultNavigationContext);
 
   const zoom = useAppSelector((state: RootState) => state.zoom);
   const dispatch = useAppDispatch();
@@ -64,10 +22,7 @@ export const Main: FunctionalComponent = () => {
   const isGrabbing = useRef(false);
 
   function handleRouterChange(event: RouterOnChangeArgs) {
-    dispatchNavigation({
-      type: 'path-change',
-      data: event,
-    });
+    dispatch(updatePath(event.url));
   }
 
   function getInputPosition(event: TouchEvent | MouseEvent) {
@@ -104,13 +59,10 @@ export const Main: FunctionalComponent = () => {
     const deltaX = position.x - dragStart.current.x;
     const deltaY = position.y - dragStart.current.y;
     if (deltaX !== 0 || deltaY !== 0) {
-      dispatchNavigation({
-        type: 'panning-delta',
-        data: {
-          x: deltaX * 0.5,
-          y: deltaY * 0.5,
-        }
-      });
+      dispatch(updatePanningDelta({
+        x: deltaX * 0.5,
+        y: deltaY * 0.5,
+      }));
     }
   }
 
@@ -120,7 +72,7 @@ export const Main: FunctionalComponent = () => {
 
   function stopDragging() {
     isGrabbing.current = false;
-    dispatchNavigation({ type: 'panning-stop', data: null });
+    dispatch(updatePanning(false));
     window.removeEventListener('touchmove', handleMove);
     window.removeEventListener('touchend', handleUp);
     window.removeEventListener('touchcancel', handleUp);
@@ -147,12 +99,10 @@ export const Main: FunctionalComponent = () => {
   });
 
   return (
-    <NavigationContext.Provider value={navigation}>
-      <main class={mainClass} onDblClick={handleDoubleClick}>
-        <Router onChange={handleRouterChange}>
-          <Content default />
-        </Router>
-      </main>
-    </NavigationContext.Provider>
+    <main class={mainClass} onDblClick={handleDoubleClick}>
+      <Router onChange={handleRouterChange}>
+        <Content default />
+      </Router>
+    </main>
   );
 };

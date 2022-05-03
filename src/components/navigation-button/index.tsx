@@ -1,9 +1,7 @@
 import { FunctionalComponent, h } from 'preact';
-import { useContext } from 'preact/hooks';
 import classnames from 'classnames';
 import { useAppSelector } from '../../hooks';
 import { RootState } from '../../store';
-import { NavigationContext } from '../../contexts';
 
 import style from './style.scss';
 
@@ -20,7 +18,6 @@ export const NavigationButton: FunctionalComponent<NavigationButtonProps> = ({
   position,
   ...otherProps
 }) => {
-  const naviationContext = useContext(NavigationContext);
   const zoom = useAppSelector((state: RootState) => state.zoom);
 
   const chars = children.split('');
