@@ -6,7 +6,9 @@ export interface Preferences {
 }
 
 const name = 'preferences';
-const initialState = restorePreferences() as Preferences;
+const initialState = (restorePreferences() || {
+  temperatureUnit: 'F',
+}) as Preferences;
 
 export const preferencesSlice = createSlice({
   name,

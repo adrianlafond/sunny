@@ -1,4 +1,7 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
+import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query';
+import { convertJsonToData, Locations } from './geocoding';
+
+const API = 'https://geocoding-api.open-meteo.com/v1';
 
 // Raw response from Open-Meteo Geocoding API
 type RawResponse = RawResponseLocation[];
@@ -16,13 +19,19 @@ interface RawResponseLocation {
 export const locationsApi = createApi({
   reducerPath: 'locationsApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: 'https://geocoding-api.open-meteo.com/v1/search?name=',
+    baseUrl: API,
   }),
   endpoints: builder => ({
-    getLocationCoords: builder.query<RawResponse, string>({
-      query: (input: string) => input,
+    getLocationCoords: builder.query<Locations, string>({
+      query: (input: string) => `search?name=${input}`,
+
+      transformResponse: (response: { results: RawResponse }) => {
+        if ('results' in response) {
+          const { results } = response;
+          return convertJsonToData(results);
+        }
+        return [];
+      },
     }),
   }),
 });
-
-export const { useGetLocationCoordsQuery } = locationsApi;

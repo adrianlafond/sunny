@@ -31,7 +31,7 @@ let throttleTimeout = 0;
  * Fetches latitude and longitude locations for an input, throttled to limit the
  * number of fetches.
  */
-export async function getLocationCoords(input: string): Promise<LocationResponse> {
+export function getLocationCoords(input: string): Promise<LocationResponse> {
   const lastInput = input;
   clearTimeout(throttleTimeout);
   return new Promise(resolve => {
@@ -55,14 +55,14 @@ async function fetchLocationCoords(input: string): Promise<LocationResponse> {
     return {
       error: response.status,
     };
-  } catch (error) {
+  } catch {
     return {
       error: 400,
     };
   }
 }
 
-function convertJsonToData(json: RawResponse): Locations {
+export function convertJsonToData(json: RawResponse): Locations {
   return json.map(location => ({
     name: location.name,
     latitude: location.latitude,

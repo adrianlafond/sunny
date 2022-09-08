@@ -1,5 +1,5 @@
 import { FunctionalComponent, h } from 'preact';
-import { useEffect, useRef } from 'preact/hooks';
+import { useEffect, useRef, useState } from 'preact/hooks';
 import { route } from 'preact-router';
 import classnames from 'classnames';
 import { RootState } from '../../store';
@@ -7,21 +7,30 @@ import { useAppSelector, useAppDispatch } from '../../hooks';
 import { NOT_FOUND } from '../../constants';
 import { NavigationButton } from '../navigation-button';
 import { LocationButton } from '../location-button';
-import { Location } from '../../services/geocoding';
+import { Location, Locations } from '../../services/geocoding';
 import { createStubForecast } from '../../services';
 import { addForecast, fetchLocations } from '../../features';
+import { locationsApi } from '../../services/locations';
 
 import page from '../shared/page.scss';
 import typography from '../shared/typography.scss';
 import style from './style.scss';
 
-
 export const AddLocation: FunctionalComponent = () => {
-  const { data, navigation } = useAppSelector((state: RootState) => ({
-    data: state.locations,
-    navigation: state.navigation,
-  }));
+  const navigation = useAppSelector((state: RootState) => state.navigation);
   const dispatch = useAppDispatch();
+
+  const [locations, setLocations] = useState<{
+    data: Locations,
+    isError: boolean,
+    isLoading: boolean,
+    isSuccess: boolean,
+  }>({
+    data: [],
+    isError: false,
+    isLoading: false,
+    isSuccess: false,
+  });
 
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -66,10 +75,17 @@ export const AddLocation: FunctionalComponent = () => {
 
   const handleLocationInput = async (event: Event) => {
     const input = event.target as HTMLInputElement;
-    fetchLocations(dispatch, input.value);
-    // Uncaught (in promise) TypeError: u is null
-    // const { data, error, isLoading } = locationsApi.endpoints.getLocationCoords.useQuery(input.value);
-    // console.log(isLoading, error, data);
+
+    const {
+      data = [],
+      isError,
+      isLoading,
+      isSuccess,
+    } = await dispatch(
+      locationsApi.endpoints.getLocationCoords.initiate(input.value)
+    );
+
+    setLocations({ data, isError, isLoading, isSuccess });
   }
 
   function handleAddLocation(location: Location) {
@@ -118,7 +134,7 @@ export const AddLocation: FunctionalComponent = () => {
         >
           <div class={style['addlocation__results-scroll']}>
             <ul class={style['addlocation__results-list']}>
-            {data.locations.map((location, index) => (
+            {locations.data.map((location, index) => (
               <LocationButton
                 key={`${location.latitude}--${location.longitude}`}
                 index={index}
@@ -128,7 +144,7 @@ export const AddLocation: FunctionalComponent = () => {
               />
             ))}
             </ul>
-            {data.loading && <p>Loading...</p>}
+            {locations.isLoading && <p>Loading...</p>}
           </div>
         </div>
       </div>

@@ -19,11 +19,11 @@ export const locationsSlice = createSlice({
   name,
   initialState,
   reducers: {
-    locationsLoading: state => {
+    locationsLoading: (state: LocationsState) => {
       state.error = null;
       state.loading = true;
     },
-    locationsReceived: (state, action: PayloadAction<LocationResponse>) => {
+    locationsComplete: (state: LocationsState, action: PayloadAction<LocationResponse>) => {
       state.loading = false;
       if (action.payload.error) {
         state.error = action.payload.error;
@@ -35,12 +35,12 @@ export const locationsSlice = createSlice({
   },
 });
 
-const { locationsLoading, locationsReceived } = locationsSlice.actions;
+const { locationsLoading, locationsComplete } = locationsSlice.actions;
 
 export const fetchLocations = async (dispatch: Dispatch, input: string) => {
   dispatch(locationsLoading());
   const response = await getLocationCoords(input);
-  dispatch(locationsReceived(response));
+  dispatch(locationsComplete(response));
 };
 
 export const locationsReducer = locationsSlice.reducer;
