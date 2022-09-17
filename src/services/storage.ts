@@ -1,39 +1,39 @@
-import { ForecastState, Preferences } from '../features';
-import { getDefaultForecast } from './default-forecast';
+import { ForecastState, Preferences } from '../features'
+import { getDefaultForecast } from '../contexts/forecast'
 
-export function restoreForecasts() {
-  if ('undefined' !== typeof window) {
-    const storage = window.localStorage.getItem('forecasts');
+export function restoreForecasts () {
+  if (typeof window !== 'undefined') {
+    const storage = window.localStorage.getItem('forecasts')
     if (storage) {
-      return JSON.parse(storage) as ForecastState[];
+      return JSON.parse(storage) as ForecastState[]
     }
   }
-  return [getDefaultForecast()];
+  return [getDefaultForecast()]
 }
 
-export function storeForecasts(forecasts: ForecastState[]) {
-  if ('undefined' !== typeof window) {
+export function storeForecasts (forecasts: ForecastState[]) {
+  if (typeof window !== 'undefined') {
     const store = forecasts.map(f => ({
       ...f,
       error: null,
-      loading: false,
-    }));
-    window.localStorage.setItem('forecasts', JSON.stringify(store));
+      loading: false
+    }))
+    window.localStorage.setItem('forecasts', JSON.stringify(store))
   }
 }
 
-export function restorePreferences() {
-  if ('undefined' !== typeof window) {
-    const storage = window.localStorage.getItem('preferences');
+export function restorePreferences () {
+  if (typeof window !== 'undefined') {
+    const storage = window.localStorage.getItem('preferences')
     if (storage) {
-      return JSON.parse(storage) as Preferences;
+      return JSON.parse(storage) as Preferences
     }
   }
-  return null;
+  return null
 }
 
-export function storePreferences(preferences: Preferences) {
-  if ('undefined' !== typeof window) {
-    window.localStorage.setItem('preferences', JSON.stringify(preferences));
+export function storePreferences (preferences: Preferences) {
+  if (typeof window !== 'undefined') {
+    window.localStorage.setItem('preferences', JSON.stringify(preferences))
   }
 }

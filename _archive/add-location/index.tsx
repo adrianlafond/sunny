@@ -100,7 +100,7 @@ export const AddLocation: FunctionalComponent = () => {
   }
 
   return (
-    <div class={classnames(page.page, style.addlocation)}>
+    <div class={classnames(page.page, style.addlocation, 'bg-white')}>
       <div class={classnames(page.page__content, style.addlocation__content)}>
         <div>
           {navigation.path === NOT_FOUND ? (

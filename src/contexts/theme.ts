@@ -1,7 +1,5 @@
-import { createContext } from 'preact';
+import { createContext } from 'preact'
 
-export const ThemeContext = createContext<{
-  theme: 'light' | 'dark';
-}>({
-  theme: 'light',
-});
+export type Theme = 'day' | 'night'
+
+export const ThemeContext = createContext<Theme>('day')

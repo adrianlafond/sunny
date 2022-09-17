@@ -7,8 +7,9 @@
     "build": "preact build",
     "serve": "sirv build --port 8080 --cors --single",
     "dev": "preact watch",
-    "lint": "eslint 'src/**/*.{js,jsx,ts,tsx}'",
-    "test": "jest ./tests"
+    "lint": "eslint '{tests,src}/**/*.{ts,tsx}' --fix",
+    "test": "jest ./tests",
+    "css": "tailwindcss -i ./src/style/main.css -o ./src/assets/sunny.css --watch"
   },
   "eslintConfig": {
     "parser": "@typescript-eslint/parser",
@@ -23,6 +24,8 @@
   "dependencies": {
     "@reduxjs/toolkit": "^1.8.1",
     "classnames": "^2.3.1",
+    "date-fns": "^2.29.2",
+    "lodash.throttle": "^4.1.1",
     "preact": "^10.3.1",
     "preact-render-to-string": "^5.1.4",
     "preact-router": "^3.2.1",
@@ -31,18 +34,21 @@
   "devDependencies": {
     "@types/enzyme": "^3.10.5",
     "@types/jest": "^26.0.8",
-    "@typescript-eslint/eslint-plugin": "^2.25.0",
-    "@typescript-eslint/parser": "^2.25.0",
+    "@types/lodash.throttle": "^4.1.7",
     "enzyme": "^3.11.0",
     "enzyme-adapter-preact-pure": "^3.1.0",
-    "eslint": "^6.8.0",
+    "eslint": "^8.23.0",
     "eslint-config-preact": "^1.1.1",
+    "eslint-config-standard-with-typescript": "^22.0.0",
+    "eslint-plugin-prettier": "^4.2.1",
     "jest": "^27.2.5",
     "jest-preset-preact": "^4.0.2",
     "preact-cli": "^3.0.0",
+    "prettier": "^2.7.1",
     "sass": "^1.49.9",
     "sass-loader": "^10.2.1",
     "sirv-cli": "^1.0.0-next.3",
+    "tailwindcss": "^3.1.8",
     "typescript": "^4.5.2"
   },
   "jest": {

@@ -1,5 +1,5 @@
-import { WeatherCode } from '../services/weather-code';
+import { WeatherCode } from '../constants'
 
 export interface Text {
-  weather: { [key in WeatherCode]: string; };
+  weather: { [key in WeatherCode]: string; }
 }
