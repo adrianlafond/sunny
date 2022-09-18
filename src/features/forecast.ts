@@ -5,7 +5,7 @@ const name = 'forecast'
 const initialState: Forecast = {
   elevation: 0,
   utcOffsetSeconds: 0,
-  temperatureUnit: 'C',
+  temperatureUnit: 'F',
   hourly: [],
   currentWeather: {
     time: new Date().valueOf(),

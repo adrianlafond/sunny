@@ -43,7 +43,7 @@ function buildForecastUrl ({
   latitude = DEFAULT_LATITUDE,
   longitude = DEFAULT_LONGITUDE,
   hourly = ['temperature_2m', 'apparent_temperature', 'precipitation', 'snow_depth', 'weathercode'],
-  temperatureUnit = 'C',
+  temperatureUnit = 'F',
   windSpeedUnit = 'kmh',
   precipitationUnit = 'mm',
   timezone = 'America%2FNew_York',

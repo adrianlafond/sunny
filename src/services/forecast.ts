@@ -11,14 +11,7 @@ export interface Forecast {
   elevation: number
   utcOffsetSeconds: number
   temperatureUnit: 'C' | 'F'
-  hourly: Array<{
-    time: number
-    temperature: number
-    apparentTemperature: number
-    precipitation: number
-    snowDepth: number
-    weatherCode: WeatherCode
-  }>
+  hourly: HourlyForecast[]
   currentWeather: {
     time: number
     temperature: number
@@ -28,6 +21,15 @@ export interface Forecast {
   }
   daily: DailyForecast[]
   timestamp: number
+}
+
+export interface HourlyForecast {
+  time: number
+  temperature: number
+  apparentTemperature: number
+  precipitation: number
+  snowDepth: number
+  weatherCode: WeatherCode
 }
 
 export interface DailyForecast {
@@ -118,7 +120,7 @@ function buildUrl ({
   latitude = DEFAULT_LATITUDE,
   longitude = DEFAULT_LONGITUDE,
   hourly = ['temperature_2m', 'apparent_temperature', 'precipitation', 'snow_depth', 'weathercode'],
-  temperatureUnit = 'C',
+  temperatureUnit = 'F',
   windSpeedUnit = 'kmh',
   precipitationUnit = 'mm',
   timezone = 'America%2FNew_York',
@@ -128,12 +130,12 @@ function buildUrl ({
     API,
     `latitude=${latitude}`,
     `&longitude=${longitude}`,
-    `&hourly=${hourly}`,
+    `&hourly=${hourly.toString()}`,
     `&temperature_unit=${temperatureUnit === 'F' ? 'fahrenheit' : 'celsius'}`,
     `&windspeed_unit=${windSpeedUnit}`,
     `&precipitation_unit=${precipitationUnit}`,
     `&timezone=${timezone}`,
-    `&current_weather=${currentWeather}`,
+    `&current_weather=${currentWeather.toString()}`,
     '&daily=sunrise,sunset,weathercode'
   ].join('')
 }

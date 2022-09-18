@@ -5,7 +5,7 @@ import { updateForecast, updateTheme } from '../features'
 import { useAppDispatch, useAppSelector } from '../hooks'
 import { DailyForecast, useGetForecastQuery } from '../services'
 import { RootState } from '../store'
-import { CurrentForecast } from './current-forecast'
+import { CurrentWeather } from './current-weather'
 
 export const Forecast = () => {
   const dispatch = useAppDispatch()
@@ -56,7 +56,7 @@ export const Forecast = () => {
   }
 
   if (data != null) {
-    return <CurrentForecast />
+    return <CurrentWeather />
   }
 
   return null
