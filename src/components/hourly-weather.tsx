@@ -1,4 +1,6 @@
 import { h } from 'preact'
+import { useContext } from 'preact/hooks'
+import { ForecastContext } from '../contexts'
 import { useAppSelector } from '../hooks'
 import { RootState } from '../store'
 import { HourlyWeatherItem } from './hourly-weather-item'
@@ -9,17 +11,18 @@ export interface HourWeatherProps {
 
 export const HourlyWeather = ({ relativeToCurrent }: HourWeatherProps) => {
   const { showForecast } = useAppSelector((state: RootState) => state.ui)
+  const { forecast } = useContext(ForecastContext)
 
-  const { currentTime, hourly } = useAppSelector((state: RootState) => ({
-    currentTime: state.forecast.currentWeather.time,
-    hourly: state.forecast.hourly
-  }))
+  if (!showForecast || !(forecast != null)) {
+    return null
+  }
+
+  const { time: currentTime } = forecast?.currentWeather
+  const { hourly } = forecast
 
   const filtered = hourly.filter(item => relativeToCurrent === 'before'
     ? item.time < currentTime
     : item.time > currentTime)
 
-  return showForecast
-    ? <ul>{filtered.map(item => <HourlyWeatherItem key={item.time} {...item} />)}</ul>
-    : null
+  return <ul>{filtered.map(item => <HourlyWeatherItem key={item.time} {...item} />)}</ul>
 }

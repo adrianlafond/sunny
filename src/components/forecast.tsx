@@ -13,13 +13,15 @@ export const Forecast = () => {
   // TODO: memoize the selector @ https://redux.js.org/tutorials/fundamentals/part-7-standard-patterns#memoizing-selectors-with-createselector
   const latitude = useAppSelector((state: RootState) => state.location.latitude)
   const longitude = useAppSelector((state: RootState) => state.location.longitude)
+  const temperatureUnit = useAppSelector((state: RootState) => state.forecast.temperatureUnit)
 
   const { data, error, isLoading } = useGetForecastQuery({
     latitude,
-    longitude
+    longitude,
+    temperatureUnit
   })
 
-  console.log('Forecast.render()')
+  console.log('Forecast.render()', isLoading)
 
   useEffect(() => {
     if (data != null) {

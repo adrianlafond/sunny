@@ -1,28 +1,42 @@
 import { h } from 'preact'
-import { useEffect, useRef, useState } from 'preact/hooks'
+import { useRef, useState } from 'preact/hooks'
+import { memo } from 'preact/compat'
 import throttle from 'lodash.throttle'
-import { useAppDispatch, useAppSelector } from '../hooks'
-import { useLazyGetLocationCoordsQuery } from '../services'
-import { RootState } from '../store'
+import { useAppDispatch, useFetchLocations } from '../hooks'
 import { LocationOption } from './location-option'
-import { updateLocation, hideForecast, showForecast } from '../features'
+import { hideForecast, showForecast } from '../features'
+import { DEFAULT_LATITUDE, DEFAULT_LONGITUDE } from '../constants'
+import { Location } from '../services'
 
-export const Location = () => {
+export interface LocationProps {
+  onSelectLocation: (latitude: number, longitude: number) => void
+}
+
+const LocationInput = memo(({ onSelectLocation }: LocationProps) => {
   const dispatch = useAppDispatch()
-  const { name, state, latitude, longitude } = useAppSelector((state: RootState) => state.location)
 
-  const [inputValue, setInputValue] = useState(name)
+  const [location, setLocation] = useState<Location>({
+    id: 'default',
+    name: 'Brooklyn',
+    latitude: DEFAULT_LATITUDE,
+    longitude: DEFAULT_LONGITUDE,
+    country: 'United States',
+    state: 'New York',
+    timezone: 'America/New_York'
+  })
+
+  const [inputValue, setInputValue] = useState(location.name)
   const [searching, setSearching] = useState(false)
 
-  const [trigger, result] = useLazyGetLocationCoordsQuery()
-  const throttledTrigger = throttle(trigger, 100, { trailing: false })
+  const { isError, isLoading, locations, fetchLocations } = useFetchLocations()
+  const throttledFetch = throttle(fetchLocations, 100, { trailing: false })
 
   const resultsEl = useRef<HTMLUListElement>(null)
 
   function handleQuery (event: Event) {
     const inputEl = event.target as HTMLInputElement
     setInputValue(inputEl.value)
-    throttledTrigger(inputEl.value)?.catch(console.error)
+    throttledFetch(inputEl.value)
   }
 
   function handleFocus () {
@@ -35,7 +49,7 @@ export const Location = () => {
     // If blur is result of an interaction with any search results, then ignore.
     if (resultsEl.current != null && event.relatedTarget != null) {
       const target: Node | null =
-         'nodeType' in event.relatedTarget ? event.relatedTarget : null
+        'nodeType' in event.relatedTarget ? event.relatedTarget : null
       if (resultsEl.current.contains(target)) {
         return
       }
@@ -45,9 +59,10 @@ export const Location = () => {
   }
 
   function handleOptionClick (id: string) {
-    const location = result.currentData?.find(item => item.id === id)
+    const location = locations?.find(item => item.id === id)
     if (location != null) {
-      dispatch(updateLocation(location))
+      setLocation(location)
+      onSelectLocation(location.latitude, location.longitude)
       cancelSearching()
     }
   }
@@ -57,7 +72,7 @@ export const Location = () => {
     dispatch(showForecast())
   }
 
-  useEffect(throttledTrigger.cancel)
+  const { name, state, latitude, longitude } = location
 
   return (
     <div class="my-8">
@@ -66,7 +81,7 @@ export const Location = () => {
         class="text-5xl w-full"
         onInput={handleQuery}
         onFocus={handleFocus}
-        onBlurCapture={handleBlur}
+        onBlur={handleBlur}
       />
       <h3>
         {state}{' '}
@@ -75,9 +90,9 @@ export const Location = () => {
         </span>
       </h3>
 
-      {searching && result.currentData && (
+      {searching && locations && (
         <ul ref={resultsEl}>
-          {result.currentData?.map(item => (
+          {locations.map(item => (
             <LocationOption
               key={item.id}
               id={item.id}
@@ -92,4 +107,6 @@ export const Location = () => {
       )}
     </div>
   )
-}
+})
+
+export { LocationInput as Location }

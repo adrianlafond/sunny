@@ -1,3 +1,4 @@
+export const GEOCODING_API = 'https://geocoding-api.open-meteo.com/v1'
 
 export type Locations = Location[]
 
@@ -29,4 +30,19 @@ export function convertGeocodingJsonToData (json: RawLocations): Locations {
     state: location.admin1,
     timezone: location.timezone
   }))
+}
+
+export async function fetchLocations (name: string) {
+  try {
+    const URL = `${GEOCODING_API}/search?name=${name}`
+    const resp = await window.fetch(URL)
+    if (resp.status === 200) {
+      const json = await resp.json()
+      const data = convertGeocodingJsonToData(json.results)
+      return { error: false, data }
+    }
+    return { error: true }
+  } catch (error) {
+    return { error: true }
+  }
 }

@@ -1,6 +1,6 @@
 import { WeatherCode, DEFAULT_LATITUDE, DEFAULT_LONGITUDE } from '../constants'
 
-const API = 'https://api.open-meteo.com/v1/forecast?'
+const FORECAST_API = 'https://api.open-meteo.com/v1'
 
 export interface ForecastResponse {
   error: number | null
@@ -71,7 +71,7 @@ export interface RawForecastResponse {
   }
 }
 
-export interface ForecastProps {
+export interface ForecastParams {
   latitude?: number
   longitude?: number
   hourly?: string[] // can be more specific
@@ -82,41 +82,21 @@ export interface ForecastProps {
   currentWeather?: boolean
 }
 
-/**
- * Fetches a forecast for a given latitude and longitude.
- */
-export async function getForecast (props: ForecastProps = {}): Promise<ForecastResponse> {
-  const latitude = props.latitude ?? DEFAULT_LATITUDE
-  const longitude = props.longitude ?? DEFAULT_LONGITUDE
-  const url = buildUrl({
-    ...props,
-    latitude,
-    longitude
-  })
+export async function fetchForecast (params?: ForecastParams) {
   try {
-    const response = await fetch(url)
-    if (response.status === 200) {
-      const json = await response.json()
-      return {
-        error: null,
-        data: convertForecastJsonToData({
-          ...json,
-          latitude,
-          longitude
-        })
-      }
+    const resp = await window.fetch(buildForecastUrl(params))
+    if (resp.status === 200) {
+      const json = await resp.json()
+      const data = convertForecastJsonToData(json)
+      return { error: false, data }
     }
-    return {
-      error: response.status
-    }
+    return { error: true }
   } catch (error) {
-    return {
-      error: 400
-    }
+    return { error: true }
   }
 }
 
-function buildUrl ({
+export function buildForecastUrl ({
   latitude = DEFAULT_LATITUDE,
   longitude = DEFAULT_LONGITUDE,
   hourly = ['temperature_2m', 'apparent_temperature', 'precipitation', 'snow_depth', 'weathercode'],
@@ -125,9 +105,10 @@ function buildUrl ({
   precipitationUnit = 'mm',
   timezone = 'America%2FNew_York',
   currentWeather = true
-}: Omit<ForecastProps, 'name'> = {}) {
+}: ForecastParams = {}) {
   return [
-    API,
+    FORECAST_API,
+    '/forecast?',
     `latitude=${latitude}`,
     `&longitude=${longitude}`,
     `&hourly=${hourly.toString()}`,

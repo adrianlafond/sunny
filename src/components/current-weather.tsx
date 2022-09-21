@@ -1,7 +1,11 @@
 import { h } from 'preact'
+import { useContext } from 'preact/hooks'
+
 import { useAppSelector } from '../hooks'
 import { RootState } from '../store'
 import { WeatherCode } from '../constants'
+import { TemperatureUnit } from './temperature-unit'
+import { ForecastContext } from '../contexts'
 
 export const CurrentWeather = () => {
   const { showForecast } = useAppSelector((state: RootState) => state.ui)
@@ -10,34 +14,48 @@ export const CurrentWeather = () => {
     return null
   }
 
-  const { temperatureUnit } = useAppSelector((state: RootState) => state.forecast)
-  const { time } = useAppSelector((state: RootState) => state.forecast.currentWeather)
-  const {
-    temperature,
-    apparentTemperature,
-    weatherCode
-  } = useAppSelector((state: RootState) => {
-    const currentHourly = state.forecast.hourly.find(item => item.time === time)
-    return currentHourly != null
-      ? currentHourly
-      : {
-          temperature: '-',
-          apparentTemperature: '-',
-          weatherCode: 0
-        }
-  })
+  const { isError, isLoading, forecast } = useContext(ForecastContext)
 
-  return (
-    <div>
-      <h3 class="text-9xl">
-        {temperature} {temperatureUnit}&deg;
-      </h3>
+  if (isError) {
+    return (
       <p>
-        Feels like: {apparentTemperature} {temperatureUnit}&deg;
+        An error occurred. Check your internet connection and try again.
       </p>
-      <p>
-        {new Date(time).toLocaleString()} / {WeatherCode[weatherCode]}
-      </p>
-    </div>
-  )
+    )
+  }
+
+  if (isLoading) {
+    return (
+      <p>Loading...</p>
+    )
+  }
+
+  if (forecast != null) {
+    const { time } = forecast.currentWeather
+    const currentHourly = forecast.hourly.find(item => item.time === time)
+    const { temperature, apparentTemperature, weatherCode } =
+      currentHourly != null
+        ? currentHourly
+        : {
+            temperature: '-',
+            apparentTemperature: '-',
+            weatherCode: 0
+          }
+
+    return (
+      <div>
+        <h3 class="text-9xl">
+          {temperature} <TemperatureUnit />
+        </h3>
+        <p>
+          Feels like: {apparentTemperature} <TemperatureUnit />
+        </p>
+        <p>
+          {new Date(time).toLocaleString()} / {WeatherCode[weatherCode]}
+        </p>
+      </div>
+    )
+  }
+
+  return null
 }
