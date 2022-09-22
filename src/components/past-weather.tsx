@@ -1,15 +1,14 @@
-import { Fragment, h } from 'preact'
+import { h } from 'preact'
+import { memo } from 'preact/compat'
 import { useContext, useState } from 'preact/hooks'
-import { ForecastContext } from '../contexts'
-import { useAppSelector } from '../hooks'
-import { RootState } from '../store'
+import { ForecastContext, LocationSearchContext } from '../contexts'
 import { TimedHourlyWeatherItem } from './timed-hourly-weather-item'
 
-export const PastWeather = () => {
-  const { showForecast } = useAppSelector((state: RootState) => state.ui)
+export const PastWeather = memo(() => {
   const { forecast } = useContext(ForecastContext)
+  const hideForecast = useContext(LocationSearchContext)
 
-  if (!showForecast || !(forecast != null)) {
+  if (!(forecast != null)) {
     return null
   }
 
@@ -25,15 +24,20 @@ export const PastWeather = () => {
   }
 
   return (
-    <Fragment>
-      <button onClick={togglePastWeather}>
+    <div class="relative">
+      <button onClick={togglePastWeather} disabled={hideForecast}>
         {showing ? 'Hide' : 'Show'} past weather
       </button>
       <ul>
         {filtered.map((item, index) => (
-          <TimedHourlyWeatherItem key={item.time} showAfter={index * 60 + 60} {...item} />
+          <TimedHourlyWeatherItem
+            key={item.time}
+            showAfter={index * 60 + 60}
+            {...item}
+          />
         ))}
       </ul>
-    </Fragment>
+      {hideForecast ? <div class="absolute top-0 left-0 w-full h-full bg-disabled-overlay opacity-50" /> : null}
+    </div>
   )
-}
+})

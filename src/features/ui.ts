@@ -10,13 +10,13 @@ export interface Ui {
   /**
    * Forecast is hidden while locations are being searched.
    */
-  showForecast: boolean
+  hideForecast: boolean
 }
 
 const name = 'ui'
 const initialState: Ui = {
   theme: 'day',
-  showForecast: true
+  hideForecast: false
 }
 
 export const uiSlice = createSlice({
@@ -27,10 +27,10 @@ export const uiSlice = createSlice({
       state.theme = action.payload
     },
     showForecast: (state: Ui) => {
-      state.showForecast = true
+      state.hideForecast = false
     },
     hideForecast: (state: Ui) => {
-      state.showForecast = false
+      state.hideForecast = true
     }
   }
 })

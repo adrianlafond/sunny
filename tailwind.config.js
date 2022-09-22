@@ -7,6 +7,7 @@ module.exports = {
       primary: '#1e293b',
       secondary: '#64748b',
       light: '#e2e8f0',
+      'disabled-overlay': '#888888'
     },
     fontFamily: {
       sans: [

@@ -1,20 +1,12 @@
 import { h } from 'preact'
 import { useContext } from 'preact/hooks'
-
-import { useAppSelector } from '../hooks'
-import { RootState } from '../store'
 import { WeatherCode } from '../constants'
 import { TemperatureUnit } from './temperature-unit'
-import { ForecastContext } from '../contexts'
+import { ForecastContext, LocationSearchContext } from '../contexts'
 
 export const CurrentWeather = () => {
-  const { showForecast } = useAppSelector((state: RootState) => state.ui)
-
-  if (!showForecast) {
-    return null
-  }
-
   const { isError, isLoading, forecast } = useContext(ForecastContext)
+  const hideForecast = useContext(LocationSearchContext)
 
   if (isError) {
     return (
@@ -43,7 +35,7 @@ export const CurrentWeather = () => {
           }
 
     return (
-      <div>
+      <div class="relative">
         <h3 class="text-9xl">
           {temperature} <TemperatureUnit />
         </h3>
@@ -53,6 +45,11 @@ export const CurrentWeather = () => {
         <p>
           {new Date(time).toLocaleString()} / {WeatherCode[weatherCode]}
         </p>
+        {hideForecast
+          ? (
+          <div class="absolute top-0 left-0 w-full h-full bg-disabled-overlay opacity-50" />
+            )
+          : null}
       </div>
     )
   }

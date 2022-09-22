@@ -2,19 +2,22 @@ import { h } from 'preact'
 import { useRef, useState } from 'preact/hooks'
 import { memo } from 'preact/compat'
 import throttle from 'lodash.throttle'
-import { useAppDispatch, useFetchLocations } from '../hooks'
+import { useFetchLocations } from '../hooks'
 import { LocationOption } from './location-option'
-import { hideForecast, showForecast } from '../features'
 import { DEFAULT_LATITUDE, DEFAULT_LONGITUDE } from '../constants'
 import { Location } from '../services'
 
 export interface LocationProps {
+  onSearchStart: () => void
+  onSearchEnd: () => void
   onSelectLocation: (latitude: number, longitude: number) => void
 }
 
-const LocationInput = memo(({ onSelectLocation }: LocationProps) => {
-  const dispatch = useAppDispatch()
-
+const LocationInput = memo(({
+  onSearchStart,
+  onSearchEnd,
+  onSelectLocation
+}: LocationProps) => {
   const [location, setLocation] = useState<Location>({
     id: 'default',
     name: 'Brooklyn',
@@ -28,7 +31,8 @@ const LocationInput = memo(({ onSelectLocation }: LocationProps) => {
   const [inputValue, setInputValue] = useState(location.name)
   const [searching, setSearching] = useState(false)
 
-  const { isError, isLoading, locations, fetchLocations } = useFetchLocations()
+  // TODO: isError, isLoading,
+  const { locations, fetchLocations } = useFetchLocations()
   const throttledFetch = throttle(fetchLocations, 100, { trailing: false })
 
   const resultsEl = useRef<HTMLUListElement>(null)
@@ -42,7 +46,7 @@ const LocationInput = memo(({ onSelectLocation }: LocationProps) => {
   function handleFocus () {
     setInputValue('')
     setSearching(true)
-    dispatch(hideForecast())
+    onSearchStart()
   }
 
   function handleBlur (event: FocusEvent) {
@@ -69,7 +73,7 @@ const LocationInput = memo(({ onSelectLocation }: LocationProps) => {
 
   function cancelSearching () {
     setSearching(false)
-    dispatch(showForecast())
+    onSearchEnd()
   }
 
   const { name, state, latitude, longitude } = location

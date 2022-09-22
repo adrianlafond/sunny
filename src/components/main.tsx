@@ -1,18 +1,28 @@
 import { h } from 'preact'
-import { useEffect } from 'preact/hooks'
+import { useEffect, useState } from 'preact/hooks'
 
 import { Location } from './location'
 import { HourlyWeather } from './hourly-weather'
 import { PastWeather } from './past-weather'
-import { ForecastContext } from '../contexts'
+import { ForecastContext, LocationSearchContext } from '../contexts'
 import { useFetchForecast } from '../hooks'
 import { CurrentWeather } from './current-weather'
 
 export const Main = () => {
   const forecastContext = useFetchForecast()
 
+  const [searching, setSearching] = useState(false)
+
   function handleSelectLocation (latitude: number, longitude: number) {
     forecastContext.fetchForecast({ latitude, longitude })
+  }
+
+  function handleSearchStart () {
+    setSearching(true)
+  }
+
+  function handleSearchEnd () {
+    setSearching(false)
   }
 
   const mainClass = [
@@ -28,14 +38,20 @@ export const Main = () => {
 
   return (
     <ForecastContext.Provider value={forecastContext}>
-      <main class={mainClass}>
-        <div class="max-w-screen-sm w-full mx-8">
-          <PastWeather />
-          <Location onSelectLocation={handleSelectLocation} />
-          <CurrentWeather />
-          <HourlyWeather relativeToCurrent="after" />
-        </div>
-      </main>
+      <LocationSearchContext.Provider value={searching}>
+        <main class={mainClass}>
+          <div class="max-w-screen-sm w-full mx-8">
+            <PastWeather />
+            <Location
+              onSearchStart={handleSearchStart}
+              onSearchEnd={handleSearchEnd}
+              onSelectLocation={handleSelectLocation}
+            />
+            <CurrentWeather />
+            <HourlyWeather relativeToCurrent="after" />
+          </div>
+        </main>
+      </LocationSearchContext.Provider>
     </ForecastContext.Provider>
   )
 }
