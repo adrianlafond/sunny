@@ -32,7 +32,6 @@ export const Main = () => {
   ].join(' ')
 
   useEffect(() => {
-    console.log('?')
     forecastContext.fetchForecast()
   }, [])
 

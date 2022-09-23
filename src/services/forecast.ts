@@ -1,4 +1,5 @@
 import { WeatherCode, DEFAULT_LATITUDE, DEFAULT_LONGITUDE } from '../constants'
+import { restoreLocation, restoreTemperatureUnit, save } from './storage'
 
 const FORECAST_API = 'https://api.open-meteo.com/v1'
 
@@ -96,16 +97,35 @@ export async function fetchForecast (params?: ForecastParams) {
   }
 }
 
-export function buildForecastUrl ({
-  latitude = DEFAULT_LATITUDE,
-  longitude = DEFAULT_LONGITUDE,
+function buildForecastUrl ({
+  latitude,
+  longitude,
   hourly = ['temperature_2m', 'apparent_temperature', 'precipitation', 'snow_depth', 'weathercode'],
-  temperatureUnit = 'F',
+  temperatureUnit,
   windSpeedUnit = 'kmh',
   precipitationUnit = 'mm',
   timezone = 'America%2FNew_York',
   currentWeather = true
 }: ForecastParams = {}) {
+  if (latitude === undefined || longitude === undefined) {
+    const lastLocation = restoreLocation()
+    if (lastLocation != null) {
+      latitude = lastLocation.latitude
+      longitude = lastLocation.longitude
+    } else {
+      latitude = DEFAULT_LATITUDE
+      longitude = DEFAULT_LONGITUDE
+    }
+  }
+
+  if (temperatureUnit === undefined) {
+    const lastTempUnit = restoreTemperatureUnit()
+    temperatureUnit = (lastTempUnit != null) ? lastTempUnit : 'F'
+  }
+  // TODO: this is a side effect BAD! Move into validateParams function
+  console.log(temperatureUnit)
+  save(temperatureUnit)
+
   return [
     FORECAST_API,
     '/forecast?',
@@ -122,7 +142,7 @@ export function buildForecastUrl ({
 }
 
 // Converts raw API response to Forecast
-export function convertForecastJsonToData (json: RawForecastResponse): Forecast {
+function convertForecastJsonToData (json: RawForecastResponse): Forecast {
   return {
     elevation: json.elevation,
     utcOffsetSeconds: json.utc_offset_seconds,

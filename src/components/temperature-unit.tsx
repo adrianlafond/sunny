@@ -1,11 +1,9 @@
 import { h } from 'preact'
 import { useContext } from 'preact/hooks'
-import { ForecastContext } from '../contexts'
-import { useAppSelector } from '../hooks'
-import { RootState } from '../store'
+import { ForecastContext, LocationSearchContext } from '../contexts'
 
 export const TemperatureUnit = () => {
-  const { hideForecast } = useAppSelector((state: RootState) => state.ui)
+  const hideForecast = useContext(LocationSearchContext)
   const { forecast, fetchForecast } = useContext(ForecastContext)
 
   function handleClick () {

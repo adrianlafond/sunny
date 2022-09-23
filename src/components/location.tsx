@@ -4,8 +4,7 @@ import { memo } from 'preact/compat'
 import throttle from 'lodash.throttle'
 import { useFetchLocations } from '../hooks'
 import { LocationOption } from './location-option'
-import { DEFAULT_LATITUDE, DEFAULT_LONGITUDE } from '../constants'
-import { Location } from '../services'
+import { Location, restoreLocation, save } from '../services'
 
 export interface LocationProps {
   onSearchStart: () => void
@@ -18,15 +17,7 @@ const LocationInput = memo(({
   onSearchEnd,
   onSelectLocation
 }: LocationProps) => {
-  const [location, setLocation] = useState<Location>({
-    id: 'default',
-    name: 'Brooklyn',
-    latitude: DEFAULT_LATITUDE,
-    longitude: DEFAULT_LONGITUDE,
-    country: 'United States',
-    state: 'New York',
-    timezone: 'America/New_York'
-  })
+  const [location, setLocation] = useState<Location>(restoreLocation())
 
   const [inputValue, setInputValue] = useState(location.name)
   const [searching, setSearching] = useState(false)
@@ -65,6 +56,7 @@ const LocationInput = memo(({
   function handleOptionClick (id: string) {
     const location = locations?.find(item => item.id === id)
     if (location != null) {
+      save(location)
       setLocation(location)
       onSelectLocation(location.latitude, location.longitude)
       cancelSearching()
@@ -79,7 +71,7 @@ const LocationInput = memo(({
   const { name, state, latitude, longitude } = location
 
   return (
-    <div class="my-8">
+    <div class="my-8 relative">
       <input
         value={searching ? inputValue : name}
         class="text-5xl w-full"
@@ -87,15 +79,17 @@ const LocationInput = memo(({
         onFocus={handleFocus}
         onBlur={handleBlur}
       />
-      <h3>
-        {state}{' '}
-        <span class="text-secondary dark:text-secondary">
-          ({latitude}, {longitude})
-        </span>
-      </h3>
+      {!searching && (
+        <h3>
+          {state}{' '}
+          <span class="text-secondary dark:text-secondary">
+            ({latitude}, {longitude})
+          </span>
+        </h3>
+      )}
 
       {searching && locations && (
-        <ul ref={resultsEl}>
+        <ul ref={resultsEl} class="absolute left-0 top-12 bg-light z-10 w-full">
           {locations.map(item => (
             <LocationOption
               key={item.id}
