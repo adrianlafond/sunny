@@ -1,5 +1,5 @@
 import { Fragment, h } from 'preact'
-import { useCallback, useEffect, useRef, useState } from 'preact/hooks'
+import { useEffect, useRef, useState } from 'preact/hooks'
 import { memo } from 'preact/compat'
 import throttle from 'lodash.throttle'
 import { useFetchLocations } from '../hooks'
@@ -128,7 +128,7 @@ const LocationInput = memo(({
     <Fragment>
       <input
         value={searching ? inputValue : name}
-        class="text-5xl w-full bg-transparent hover:bg-slate-100 focus:bg-white"
+        class="text-5xl w-full bg-transparent hover:bg-slate-100 focus:bg-white rounded-none border-0"
         type="search"
         onInput={handleQuery}
         onFocus={handleFocus}
