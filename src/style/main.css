@@ -1,0 +1,33 @@
+@import url(https://fonts.bunny.net/css?family=space-mono:400);
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: 'Atkinson';
+  src: url('../assets/woff/Atkinson-Hyperlegible-Regular-102.woff') format('woff'),
+    url('../assets/ttf/Atkinson-Hyperlegible-Regular-102.ttf') format('truetype');
+}
+
+:root {
+  --font-family: 'Space Mono', monospace;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* */
+  }
+}
+
+body {
+  font-family: var(--font-family);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.transition-searching {
+  transition: opacity 0.15s ease-out;
+}

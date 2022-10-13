@@ -1,0 +1,113 @@
+.location {
+  padding: 48px;
+  // animation: weather 3s ease infinite;
+  background-repeat: no-repeat;
+
+  // CLEAR
+  &--code-0 {
+    background-image: linear-gradient(180deg,
+      transparent 0%,
+      azure 20%,
+      white 50%,
+      azure 80%,
+      transparent 100%,
+    );
+  }
+
+  // MAINLY_CLEAR
+  &--code-1 {
+    background: linear-gradient(
+      180deg,
+      #000 0%,
+      lightblue 20%,
+      white 50%,
+      lightblue 80%,
+      #000 100%
+    );
+  }
+
+  // PARTLY_CLOUDY
+  &--code-2 {
+    background: linear-gradient(
+      180deg,
+      #000 0%,
+      lightslategray 20%,
+      whitesmoke 50%,
+      lightslategray 80%,
+      #000 100%
+    );
+  }
+
+  // OVERCAST
+  &--code-3 {
+    background: linear-gradient(
+      180deg,
+      #000 0%,
+      slategray 20%,
+      gainsboro 50%,
+      slategray 80%,
+      #000 100%
+    );
+  }
+
+  // FOG
+  &--code-45 {
+    background: linear-gradient(
+      180deg,
+      #000 0%,
+      gainsboro 20%,
+      silver 50%,
+      gainsboro 80%,
+      #000 100%
+    );
+  }
+
+  // MODERATE
+  &--code-81 {
+    background: linear-gradient(
+      180deg,
+      #000 0%,
+      steelblue 10%,
+      slateblue 15%,
+      steelblue 20%,
+      slateblue 25%,
+      steelblue 30%,
+      slateblue 35%,
+      steelblue 40%,
+      slateblue 45%,
+      steelblue 50%,
+      slateblue 55%,
+      steelblue 60%,
+      slateblue 65%,
+      steelblue 70%,
+      slateblue 75%,
+      steelblue 80%,
+      slateblue 85%,
+      steelblue 90%,
+      #000 100%
+    );
+  }
+  &__temp-small {
+    font-size: 16px;
+    margin-left: 12px;
+  }
+
+  &__hour-slider {
+    width: 100%;
+  }
+}
+
+@keyframes weather {
+  0% {
+    background-position: 0% 0%;
+    background-size: 100% 90%;
+  }
+  50% {
+    background-position: 0% 100%;
+    background-size: 100% 100%;
+  }
+  100% {
+    background-position: 0% 0%;
+    background-size: 100% 90%;
+  }
+}

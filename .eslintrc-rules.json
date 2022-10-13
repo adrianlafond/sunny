@@ -1,0 +1,47 @@
+  "rules": {
+    "import/no-extraneous-dependencies": [
+      "error",
+      {
+        "devDependencies": [
+          "**/*.spec.tsx",
+          "**/*.spec.ts"
+        ]
+      }
+    ],
+    "import/no-unresolved": "off",
+    "import/extensions": "off",
+    "import/prefer-default-export": "off",
+    "jsx-a11y/label-has-associated-control": ["error", { "assert": "either" }],
+    "max-len": ["error", {
+      "code": 80,
+      "ignoreUrls": true,
+      "ignoreTemplateLiterals": true,
+      "ignoreRegExpLiterals": true
+    }],
+    "no-console": "error",
+    "no-empty": "off",
+    "no-plusplus": "off",
+    "no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],
+    "no-param-reassign": ["error", { "props": false }],
+    "quotes": ["error", "single", { "avoidEscape": true, "allowTemplateLiterals": true }],
+    "semi": ["error", "never"],
+    "keyword-spacing": "error",
+    "require-atomic-updates": "off",
+    "react/button-has-type": "off",
+    "react/function-component-definition": "off",
+    "react/no-string-refs": "error",
+    "react/no-find-dom-node": "error",
+    "react/no-is-mounted": "error",
+    "react/jsx-no-bind": ["error", { "allowFunctions": true }],
+    "react/jsx-no-comment-textnodes": "error",
+    "react/jsx-curly-spacing": "error",
+    "react/jsx-no-undef": "error",
+    "react/jsx-uses-react": "error",
+    "react/jsx-uses-vars": "error",
+    "react/jsx-filename-extension": [
+      "error",
+      { "extensions": [".tsx"] }
+    ],
+    "react/jsx-props-no-spreading": "off",
+    "react/require-default-props": "off"
+  }

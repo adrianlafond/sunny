@@ -1,5 +1,5 @@
-import { WeatherCode } from '../services/weather-code';
-import { Text } from './lang';
+import { WeatherCode } from '../constants'
+import { Text } from './lang'
 
 export const en: Text = {
   weather: {
@@ -30,6 +30,6 @@ export const en: Text = {
     [WeatherCode.HEAVY_SNOW_SHOWERS]: 'Heavy snow showers',
     [WeatherCode.THUNDERSTORM]: 'Thunderstorm',
     [WeatherCode.THUNDERSTORM_WITH_SLIGHT_HAIL]: 'Thunderstorm with hail',
-    [WeatherCode.THUNDERSTORM_WITH_HEAVY_HAIL]: 'Thunderstorm with heavy hail',
+    [WeatherCode.THUNDERSTORM_WITH_HEAVY_HAIL]: 'Thunderstorm with heavy hail'
   }
 }

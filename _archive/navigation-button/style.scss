@@ -1,0 +1,393 @@
+@import '../../style/variables.scss';
+
+.navbtn {
+  position: absolute;
+  height: 72px;
+  white-space: nowrap;
+  font-family: var(--font-family);
+  font-size: 18px;
+  color: var(--color);
+  cursor: pointer;
+  display: inline-flex;
+  justify-content: center;
+  text-transform: uppercase;
+
+  &,
+  &:hover,
+  &:focus,
+  &:active,
+  &:visited {
+    outline: none;
+    border: none;
+    background: transparent;
+  }
+
+  &:focus-visible {
+    color: var(--bgcolor);
+    background: var(--bgcolor);
+    background: linear-gradient(180deg, var(--color) 0%, var(--color) 20%, transparent 100%);
+  }
+
+  &__label {
+    display: inline-flex;
+    white-space: nowrap;
+    &--left {
+      margin: 12px 0 0 36px;
+    }
+    &--right {
+      margin: 12px 36px 0 0;
+    }
+  }
+
+  // Animate the characters in the label
+  &__char {
+    overflow: hidden;
+    width: 0;
+    height: 0;
+    transform-origin: center center;
+    transition:
+      width 0.1s ease-out,
+      height 0.1s ease-out,
+      transform 0.8s ease-out;
+    display: inline-block;
+    transition-delay: 0s;
+
+    &--top {
+      transform: translateY(20px) rotate(359deg);
+    }
+    &--top:nth-child(odd) {
+      transform: translateY(20px) rotate(-359deg);
+    }
+
+    &--bottom {
+      transform: translateY(20px) rotate(359deg);
+    }
+    &--bottom:nth-child(odd) {
+      transform: translateY(20px) rotate(-359deg);
+    }
+
+    &--left {
+      transform: translateX(-20px) rotate(359deg);
+    }
+    &--left:nth-child(odd) {
+      transform: translateX(-20px) rotate(-359deg);
+    }
+
+    &--right {
+      transform: translateX(20px) rotate(359deg);
+    }
+    &--right:nth-child(odd) {
+      transform: translateX(20px) rotate(-359deg);
+    }
+  }
+
+  @for $index from 1 through 100 {
+    &:hover &__char:nth-child(#{$index}) {
+      transition-delay: #{0.2 + $index * 0.02}s;
+    }
+  }
+
+  &:hover &__char,
+  &:focus-visible &__char,
+  &:active &__char {
+    width: 16px;
+    height: 20px;
+  }
+  &:hover &__char--top,
+  &:focus-visible &__char--top,
+  &:active &__char--top {
+    transform: translateY(40px) rotate(0);
+  }
+  &:hover &__char--bottom,
+  &:focus-visible &__char--bottom,
+  &:active &__char--bottom {
+    transform: translateY(0) rotate(0);
+  }
+  &:hover &__char--left,
+  &:focus-visible &__char--left,
+  &:active &__char--left,
+  &:hover &__char--right,
+  &:focus-visible &__char--right,
+  &:active &__char--right {
+    transform: translateX(0) rotate(0);
+  }
+  // Arrows
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+  }
+
+  &::before {
+    animation-duration: 1s;
+    animation-delay: 0s;
+    animation-timing-function: ease-out;
+    animation-iteration-count: infinite;
+  }
+
+  &::after {
+    transition: 0.15s ease-out;
+  }
+
+  @mixin arrow-top($color) {
+    background: conic-gradient(
+      at 50% 0%,
+      transparent 0deg 135deg,
+      #{$color} 135deg 225deg,
+      transparent 225deg,
+    );
+  }
+  @mixin arrow-bottom($color) {
+    background: conic-gradient(
+      at 50% 100%,
+      #{$color} 45deg,
+      transparent 45deg 315deg,
+      #{$color} 315deg,
+    );
+  }
+  @mixin arrow-left($color) {
+    background: conic-gradient(
+      at 0% 50%,
+      transparent 0deg 45deg,
+      #{$color} 45deg 135deg,
+      transparent 135deg,
+    );
+  }
+  @mixin arrow-right($color) {
+    background: conic-gradient(
+      at 100% 50%,
+      transparent 180deg 225deg,
+      #{$color} 225deg 315deg,
+      transparent 315deg,
+    );
+  }
+
+  &--top {
+    padding: 0 12px 12px;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+
+    &::before {
+      top: 36px;
+      left: 50%;
+      width: 24px;
+      height: 12px;
+      transform: translateX(-50%);
+      animation-name: fadeup;
+      @include arrow-top(var(--color));
+    }
+
+    &::after {
+      top: 12px;
+      left: 50%;
+      width: 24px;
+      height: 12px;
+      transform: translateX(-50%);
+      @include arrow-top(var(--color));
+    }
+  }
+
+  &--top:hover {
+    &::after {
+      top: 10px;
+      width: 32px;
+      height: 16px;
+    }
+  }
+
+  &--top:focus-visible {
+    &::before,
+    &::after {
+      @include arrow-top(var(--bgcolor));
+    }
+    @media (prefers-color-scheme: dark) {
+      &::before,
+      &::after {
+        @include arrow-top(var(--color));
+      }
+    }
+  }
+
+  &--bottom {
+    padding: 12px 12px 0;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+
+    &::before {
+      bottom: 36px;
+      left: 50%;
+      width: 24px;
+      height: 12px;
+      transform: translateX(-50%);
+      animation-name: fadedown;
+      @include arrow-bottom(var(--color));
+    }
+
+    &::after {
+      bottom: 12px;
+      left: 50%;
+      width: 24px;
+      height: 12px;
+      transform: translateX(-50%);
+      @include arrow-bottom(var(--color));
+    }
+  }
+
+  &--bottom:hover {
+    &::after {
+      bottom: 10px;
+      width: 32px;
+      height: 16px;
+    }
+  }
+
+  &--bottom:focus-visible {
+    &::before,
+    &::after {
+      @include arrow-bottom(var(--bgcolor));
+    }
+    @media (prefers-color-scheme: dark) {
+      &::before,
+      &::after {
+        @include arrow-bottom(var(--color));
+      }
+    }
+  }
+
+  &--left:hover {
+    &::after {
+      left: 10px;
+      width: 16px;
+      height: 32px;
+    }
+  }
+
+  &--left:focus-visible {
+    &::before,
+    &::after {
+      @include arrow-left(var(--bgcolor));
+    }
+    @media (prefers-color-scheme: dark) {
+      &::before,
+      &::after {
+        @include arrow-left(var(--color));
+      }
+    }
+  }
+
+  &--right:hover {
+    &::after {
+      right: 10px;
+      width: 16px;
+      height: 32px;
+    }
+  }
+
+  &--right:focus-visible {
+    &::before,
+    &::after {
+      @include arrow-right(var(--bgcolor));
+    }
+    @media (prefers-color-scheme: dark) {
+      &::before,
+      &::after {
+        @include arrow-right(var(--color));
+      }
+    }
+  }
+
+  &--left {
+    padding: 12px;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+
+    &::before {
+      top: 50%;
+      left: 12px;
+      width: 12px;
+      height: 24px;
+      transform: translateY(-50%);
+      animation-name: fadeleft;
+      @include arrow-left(var(--color));
+    }
+
+    &::after {
+      top: 50%;
+      left: 12px;
+      width: 12px;
+      height: 24px;
+      transform: translateY(-50%);
+      @include arrow-left(var(--color));
+    }
+  }
+
+  &--right {
+    padding: 12px;
+    top: 50%;
+    right: 0;
+    transform: translateY(-50%);
+
+    &::before {
+      top: 50%;
+      right: 12px;
+      width: 12px;
+      height: 24px;
+      transform: translateY(-50%);
+      animation-name: faderight;
+      @include arrow-right(var(--color));
+    }
+
+    &::after {
+      top: 50%;
+      right: 12px;
+      width: 12px;
+      height: 24px;
+      transform: translateY(-50%);
+      @include arrow-right(var(--color));
+    }
+  }
+
+  @keyframes fadeup {
+    0% {
+      opacity: 0.25;
+      top: 36px;
+    }
+    100% {
+      opacity: 0.0;
+      top: 12px;
+    }
+  }
+  @keyframes fadedown {
+    0% {
+      opacity: 0.25;
+      bottom: 36px;
+    }
+    100% {
+      opacity: 0.0;
+      bottom: 12px;
+    }
+  }
+  @keyframes fadeleft {
+    0% {
+      opacity: 0.25;
+      left: 36px;
+    }
+    100% {
+      opacity: 0.0;
+      left: 12px;
+    }
+  }
+  @keyframes faderight {
+    0% {
+      opacity: 0.25;
+      right: 36px;
+    }
+    100% {
+      opacity: 0.0;
+      right: 12px;
+    }
+  }
+}
