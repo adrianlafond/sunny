@@ -1,17 +1,17 @@
-@import url(https://fonts.bunny.net/css?family=space-mono:400);
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-@font-face {
+/* @font-face {
   font-family: 'Atkinson';
   src: url('../assets/woff/Atkinson-Hyperlegible-Regular-102.woff') format('woff'),
     url('../assets/ttf/Atkinson-Hyperlegible-Regular-102.ttf') format('truetype');
-}
+} */
+
+@import url(https://fonts.bunny.net/css?family=Abel:400);
 
 :root {
-  --font-family: 'Space Mono', monospace;
+  --font-family: 'Abel', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 }
 
 @media (prefers-color-scheme: dark) {

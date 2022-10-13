@@ -14,9 +14,9 @@ export const TemperatureUnit = () => {
 
   return forecast != null
     ? (
-    <button onClick={handleClick} disabled={hideForecast}>
+    <button class="hover:bg-slate-100" onClick={handleClick} disabled={hideForecast}>
       {forecast.temperatureUnit}&deg;
-      <span class="text-sm">
+      <span class="text-sm block">
         {`Toggle to ${forecast.temperatureUnit === 'F' ? 'C' : 'F'}°`}
       </span>
       <span></span>

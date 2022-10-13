@@ -2,11 +2,10 @@ import { h } from 'preact'
 import { useEffect, useState } from 'preact/hooks'
 
 import { Location } from './location'
-import { HourlyWeather } from './hourly-weather'
-import { PastWeather } from './past-weather'
 import { ForecastContext, LocationSearchContext } from '../contexts'
 import { useFetchForecast } from '../hooks'
 import { CurrentWeather } from './current-weather'
+import { DailyWeather } from './daily-weather'
 
 export const Main = () => {
   const forecastContext = useFetchForecast()
@@ -26,9 +25,10 @@ export const Main = () => {
   }
 
   const mainClass = [
-    'bg-light dark:bg-primary',
-    'text-primary dark:text-light',
-    'w-full min-h-screen flex flex-col items-center'
+    'bg-stone-200',
+    'text-stone-800',
+    'w-full min-h-screen flex flex-col items-center',
+    'p-4'
   ].join(' ')
 
   useEffect(() => {
@@ -39,15 +39,14 @@ export const Main = () => {
     <ForecastContext.Provider value={forecastContext}>
       <LocationSearchContext.Provider value={searching}>
         <main class={mainClass}>
-          <div class="max-w-screen-sm w-full mx-8">
-            <PastWeather />
+          <div class="max-w-screen-sm w-full">
             <Location
               onSearchStart={handleSearchStart}
               onSearchEnd={handleSearchEnd}
               onSelectLocation={handleSelectLocation}
             />
             <CurrentWeather />
-            <HourlyWeather relativeToCurrent="after" />
+            <DailyWeather />
           </div>
         </main>
       </LocationSearchContext.Provider>

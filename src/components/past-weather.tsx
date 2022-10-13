@@ -24,7 +24,7 @@ export const PastWeather = memo(() => {
   }
 
   return (
-    <div class="relative">
+    <div class="relative bg-light rounded-xl p-4 mb-1">
       <button onClick={togglePastWeather} disabled={hideForecast}>
         {showing ? 'Hide' : 'Show'} past weather
       </button>

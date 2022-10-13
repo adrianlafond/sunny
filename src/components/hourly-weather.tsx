@@ -1,5 +1,6 @@
 import { h } from 'preact'
 import { useContext } from 'preact/hooks'
+import { clsx } from 'clsx'
 import { ForecastContext, LocationSearchContext } from '../contexts'
 import { HourlyWeatherItem } from './hourly-weather-item'
 
@@ -22,14 +23,18 @@ export const HourlyWeather = ({ relativeToCurrent }: HourWeatherProps) => {
     ? item.time < currentTime
     : item.time > currentTime)
 
+  const className = clsx('transition-searching', {
+    'opacity-0': hideForecast,
+    'cursor-default': hideForecast
+  })
+
   return (
-    <div class="relative">
-      <ul>{filtered.map(item => <HourlyWeatherItem key={item.time} {...item} />)}</ul>
-      {hideForecast
-        ? (
-          <div class="absolute top-0 left-0 w-full h-full bg-disabled-overlay opacity-50" />
-          )
-        : null}
-      </div>
+    <div class={className}>
+      <ul>
+        {filtered.map(item => (
+          <HourlyWeatherItem key={item.time} {...item} />
+        ))}
+      </ul>
+    </div>
   )
 }

@@ -123,7 +123,6 @@ function buildForecastUrl ({
     temperatureUnit = (lastTempUnit != null) ? lastTempUnit : 'F'
   }
   // TODO: this is a side effect BAD! Move into validateParams function
-  console.log(temperatureUnit)
   save(temperatureUnit)
 
   return [
@@ -149,8 +148,8 @@ function convertForecastJsonToData (json: RawForecastResponse): Forecast {
     temperatureUnit: json.hourly_units.temperature_2m === '°F' ? 'F' : 'C',
     hourly: json.hourly.time.map((time, index) => ({
       time: new Date(time).valueOf(),
-      temperature: +json.hourly.temperature_2m[index],
-      apparentTemperature: +json.hourly.apparent_temperature[index],
+      temperature: Math.round(+json.hourly.temperature_2m[index]),
+      apparentTemperature: Math.round(+json.hourly.apparent_temperature[index]),
       precipitation: +json.hourly.precipitation[index],
       snowDepth: +json.hourly.snow_depth[index],
       weatherCode: +json.hourly.weathercode[index]

@@ -1,6 +1,7 @@
 import { h } from 'preact'
 import { memo } from 'preact/compat'
 import { useContext } from 'preact/hooks'
+import { format } from 'date-fns'
 import { ForecastContext } from '../contexts'
 import { HourlyForecast } from '../services'
 
@@ -17,8 +18,8 @@ const HourlyWeatherItemComponent = (props: HourlyForecast) => {
 
   return forecast != null
     ? (
-    <li>
-      {new Date(time).toLocaleTimeString()} {temperature} {forecast.temperatureUnit}&deg;
+    <li class="bg-light rounded-xl px-4 py-2 my-1">
+      {format(new Date(time), 'h:mm bbb')} {temperature} {forecast.temperatureUnit}&deg;
       / Feels like: {apparentTemperature} {forecast.temperatureUnit}&deg;
     </li>
       )
