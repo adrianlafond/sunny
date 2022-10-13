@@ -6,7 +6,7 @@
   "scripts": {
     "build": "npm run css && preact build",
     "predeploy" : "npm run build",
-    "deploy" : "gh-pages -d build -b main",
+    "deploy" : "gh-pages -d build -b gh-pages",
     "serve": "sirv build --port 8080 --cors --single",
     "dev": "preact watch",
     "lint": "eslint '{tests,src}/**/*.{ts,tsx}' --fix",
