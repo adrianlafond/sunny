@@ -31,3 +31,7 @@ body {
 .transition-searching {
   transition: opacity 0.15s ease-out;
 }
+
+input[type=search].appearance-none {
+  appearance: none;
+}

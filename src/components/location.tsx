@@ -128,7 +128,7 @@ const LocationInput = memo(({
     <Fragment>
       <input
         value={searching ? inputValue : name}
-        class="appearance-none text-5xl w-full bg-transparent hover:bg-slate-100 focus:bg-white rounded-none border-0"
+        class="appearance-none text-4xl w-full bg-transparent hover:bg-slate-100 focus:bg-white rounded-none border-0"
         type="search"
         onInput={handleQuery}
         onFocus={handleFocus}
