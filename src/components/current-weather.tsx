@@ -35,8 +35,8 @@ export const CurrentWeather = () => {
 
     content = (
       <Fragment>
-        <h3 class="text-8xl my-8">
-          {temperature} <TemperatureUnit />
+        <h3 class="text-8xl my-8 flex">
+          <span class="mr-6">{temperature}</span><TemperatureUnit />
         </h3>
         <p>Feels like: {apparentTemperature}</p>
         <p>{en.weather[weatherCode as HourlyForecast['weatherCode']]}</p>

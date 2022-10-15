@@ -4,13 +4,10 @@ import format from 'date-fns/format'
 import { DailyForecast, HourlyForecast } from '../services'
 import { en } from '../lang/en'
 import { ForecastContext } from '../contexts'
-import clsx from 'clsx'
 
 export interface DayWeatherProps {
   day: DailyForecast
 }
-
-const halfHour = 1000 * 60 * 30
 
 export const DayWeather = ({ day }: DayWeatherProps) => {
   const { forecast } = useContext(ForecastContext)
@@ -36,13 +33,13 @@ export const DayWeather = ({ day }: DayWeatherProps) => {
           {format(new Date(day.date), 'ccc MMM d')}
         </h3>
         <p class="inline-block">
-          <span class="whitespace-nowrap mr-3">
+          <span class="inline-block mr-3">
             Dawn: {format(new Date(day.dawn), 'h:mm aaa')}
           </span>
-          <span class="whitespace-nowrap mr-3">
+          <span class="inline-block mr-3">
             Dusk: {format(new Date(day.dusk), 'h:mm aaa')}
           </span>
-          <span class="whitespace-nowrap">{en.weather[day.weatherCode]}</span>
+          <span class="inline-block">{en.weather[day.weatherCode]}</span>
         </p>
       </div>
 
