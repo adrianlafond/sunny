@@ -5,6 +5,7 @@ import throttle from 'lodash.throttle'
 import { useFetchLocations } from '../hooks'
 import { LocationOption } from './location-option'
 import { Location, restoreLocation, save } from '../services'
+import { IconGeolocation } from './icon-geolocation'
 
 export interface LocationProps {
   onSearchStart: () => void
@@ -22,6 +23,7 @@ const LocationInput = memo(({
   const [inputValue, setInputValue] = useState(location.name)
   const [searching, setSearching] = useState(false)
   const [focusIndex, setFocusIndex] = useState(-1)
+  const [geolocationDisabled, setGeolocationDisabled] = useState(false)
 
   // TODO: isError, isLoading,
   const { locations, fetchLocations } = useFetchLocations()
@@ -105,6 +107,35 @@ const LocationInput = memo(({
     }
   }
 
+  function handleGeolocation () {
+    navigator.geolocation.getCurrentPosition(
+      handleGeolocationSuccess,
+      handleGeolocationError,
+      { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
+    )
+  }
+
+  function handleGeolocationSuccess (position: GeolocationPosition) {
+    const location: Location = {
+      id: 'current-location',
+      name: 'Current location',
+      latitude: position.coords.latitude,
+      longitude: position.coords.longitude,
+      country: '',
+      state: '',
+      timezone: ''
+    }
+    save(location)
+    setInputValue(location.name)
+    setLocation(location)
+    onSelectLocation(location.latitude, location.longitude)
+  }
+
+  function handleGeolocationError (_error: GeolocationPositionError) {
+    // browser will not ask again, so disable button for session
+    setGeolocationDisabled(true)
+  }
+
   function handleOptionClick (id: string) {
     const location = locations?.find(item => item.id === id)
     if (location != null) {
@@ -126,15 +157,20 @@ const LocationInput = memo(({
 
   return (
     <Fragment>
-      <input
-        value={searching ? inputValue : name}
-        class="appearance-none text-4xl w-full bg-transparent hover:bg-slate-100 focus:bg-white rounded-none border-0"
-        type="search"
-        onInput={handleQuery}
-        onFocus={handleFocus}
-        onBlur={handleBlur}
-        ref={inputEl}
-      />
+      <div class="flex">
+        <input
+          value={searching ? inputValue : name}
+          class="appearance-none text-4xl grow bg-transparent hover:bg-slate-100 focus:bg-white rounded border-0"
+          type="search"
+          onInput={handleQuery}
+          onFocus={handleFocus}
+          onBlur={handleBlur}
+          ref={inputEl}
+        />
+        <button onClick={handleGeolocation} disabled={geolocationDisabled}>
+          <IconGeolocation class="fill-stone-800" style={{ width: 24 }} />
+        </button>
+      </div>
 
       {searching && locations && (
         <ul ref={resultsEl} class="bg-light z-10 w-full mb-8">

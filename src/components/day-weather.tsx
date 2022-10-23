@@ -18,10 +18,19 @@ export const DayWeather = ({ day }: DayWeatherProps) => {
 
   const today = new Date(day.date).getDate()
   const hours: HourlyForecast[] = []
+  let high = Number.MIN_SAFE_INTEGER
+  let low = Number.MAX_SAFE_INTEGER
   for (let i = 0; i < forecast.hourly.length; i++) {
-    if (new Date(forecast.hourly[i].time).getDate() === today) {
-      hours.push(forecast.hourly[i])
-    } else if (forecast.hourly[i].time > day.date) {
+    const hour = forecast.hourly[i]
+    if (new Date(hour.time).getDate() === today) {
+      hours.push(hour)
+      if (hour.temperature > high) {
+        high = hour.temperature
+      }
+      if (hour.temperature < low) {
+        low = hour.temperature
+      }
+    } else if (hour.time > day.date) {
       break
     }
   }
@@ -31,8 +40,10 @@ export const DayWeather = ({ day }: DayWeatherProps) => {
       <div class="mb-2">
         <h3 class="inline-block text-2xl mr-3">
           {format(new Date(day.date), 'ccc MMM d')}
+          <span class="ml-4">&uarr;{high}</span>
+          <span class="ml-4">&darr;{low}</span>
         </h3>
-        <p class="inline-block">
+        <p>
           <span class="inline-block mr-3">
             Dawn: {format(new Date(day.dawn), 'h:mm aaa')}
           </span>

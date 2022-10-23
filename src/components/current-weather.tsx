@@ -1,7 +1,7 @@
 import { Fragment, h } from 'preact'
 import { useContext } from 'preact/hooks'
 
-import { TemperatureUnit } from './temperature-unit'
+import { ButtonTemperatureUnit } from './button-temperature-unit'
 import { ForecastContext } from '../contexts'
 import { en } from '../lang/en'
 import { HourlyForecast } from '../services'
@@ -36,7 +36,8 @@ export const CurrentWeather = () => {
     content = (
       <Fragment>
         <h3 class="text-8xl my-8 flex">
-          <span class="mr-6">{temperature}</span><TemperatureUnit />
+          <span class="mr-6">{temperature}</span>
+          <ButtonTemperatureUnit />
         </h3>
         <p>Feels like: {apparentTemperature}</p>
         <p>{en.weather[weatherCode as HourlyForecast['weatherCode']]}</p>

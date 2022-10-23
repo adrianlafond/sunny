@@ -2,7 +2,7 @@ import { h } from 'preact'
 import { useContext } from 'preact/hooks'
 import { ForecastContext, LocationSearchContext } from '../contexts'
 
-export const TemperatureUnit = () => {
+export const ButtonTemperatureUnit = () => {
   const hideForecast = useContext(LocationSearchContext)
   const { forecast, fetchForecast } = useContext(ForecastContext)
 
@@ -14,12 +14,15 @@ export const TemperatureUnit = () => {
 
   return forecast != null
     ? (
-    <button class="hover:bg-slate-100" onClick={handleClick} disabled={hideForecast}>
+    <button
+      class="hover:bg-white bg-stone-100 text-blue-500 rounded border-stone-400 border px-2 pb-2"
+      onClick={handleClick}
+      disabled={hideForecast}
+    >
       {forecast.temperatureUnit}&deg;
       <span class="text-sm block">
         {`Toggle to ${forecast.temperatureUnit === 'F' ? 'C' : 'F'}°`}
       </span>
-      <span></span>
     </button>
       )
     : null
